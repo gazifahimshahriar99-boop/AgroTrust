@@ -1397,18 +1397,36 @@ export default function App() {
           </motion.div>
         )}
 
-        {/* 2. MAIN MOBILE DEVICE ENCLOSURE (With fluid stretch to full-screen on mobile screens) */}
-        <div id="agrotrust-frame" className={`w-full max-w-full min-h-screen lg:min-h-0 lg:w-[410px] lg:h-[840px] lg:rounded-[42px] lg:border-8 lg:border-stone-800 lg:shadow-2xl relative flex flex-col overflow-hidden transition-all duration-300 ${
-          theme === 'dark' ? 'bg-[#0A0A0A] text-[#E0E0E0]' : 'bg-[#F4F6F4] text-[#212121]'
+        {/* 2. MAIN MOBILE DEVICE ENCLOSURE (With premium chassis on desktop screens) */}
+        <div id="agrotrust-frame" className={`w-full max-w-full min-h-screen lg:min-h-0 lg:w-[412px] lg:h-[844px] lg:rounded-[48px] phone-bezel relative flex flex-col overflow-hidden transition-all duration-355 ${
+          theme === 'dark' ? 'bg-[#0C0D0C] text-[#ededed]' : 'bg-[#F4F6F4] text-[#212121]'
         }`}>
         
         {/* Notch / Dynamic Status Bar */}
-        <div className="absolute top-0 inset-x-0 h-10 px-6 flex items-center justify-between z-50 pointer-events-none bg-gradient-to-b from-black/50 to-transparent">
-          <span className="text-white text-xs font-semibold select-none font-mono tracking-tight">{currentTime}</span>
-          <div className="flex items-center space-y-1 text-white space-x-1.5 text-xs">
-            <span className="text-[10px] text-emerald-400 font-mono font-bold uppercase">{lang}</span>
-            <span className="opacity-80">📶</span>
-            <span className="opacity-80">🔋</span>
+        <div className="absolute top-0 inset-x-0 h-11 px-6 flex items-center justify-between z-50 pointer-events-none bg-gradient-to-b from-black/60 to-transparent">
+          <span className="text-white text-[11px] font-bold select-none font-sans tracking-tight">{currentTime}</span>
+          
+          {/* Dynamic Island Notch */}
+          <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-28 h-6 bg-black rounded-full border border-white/10 flex items-center justify-center space-x-2 shadow-inner px-2 z-55 pointer-events-auto">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/90 shadow-[0_0_8px_#10b981]" />
+            <div className="w-2.5 h-2.5 rounded-full bg-stone-900 border border-white/5 flex items-center justify-center">
+              <div className="w-1 h-1 rounded-full bg-indigo-900/50" />
+            </div>
+            <span className="text-[8px] font-bold font-mono tracking-widest text-[#4E9F3D] scale-90">SECURE</span>
+          </div>
+
+          <div className="flex items-center text-white space-x-2 text-[10px] font-mono font-bold">
+            <span className="text-[9px] text-[#4E9F3D] tracking-wider uppercase bg-white/10 px-1.5 py-0.5 rounded-md border border-white/5">{lang}</span>
+            <div className="flex items-center space-x-0.5">
+              <div className="w-[3px] h-[5px] bg-white rounded-2xs" />
+              <div className="w-[3px] h-[7px] bg-white rounded-2xs" />
+              <div className="w-[3px] h-[9px] bg-white rounded-2xs" />
+              <div className="w-[3px] h-[11px] bg-white/40 rounded-2xs" />
+            </div>
+            <span>5G</span>
+            <div className="w-5 h-2.5 border border-white/45 rounded-md p-0.5 flex items-center">
+              <div className="h-full w-4/5 bg-emerald-500 rounded-2xs" />
+            </div>
           </div>
         </div>
 
@@ -1788,8 +1806,8 @@ export default function App() {
               >
                 
                 {/* PERSISTENT HORIZONTALLY SCROLLABLE CATEGORY PILLS */}
-                <div className={`py-2 px-3 border-b flex items-center space-x-1.5 overflow-x-auto whitespace-nowrap scrollbar-none transition-all duration-300 backdrop-blur-md ${
-                  theme === 'dark' ? 'bg-black/15 border-white/10' : 'bg-white/25 border-[#1A5319]/10'
+                <div className={`py-3 px-4 border-b flex items-center space-x-2 overflow-x-auto whitespace-nowrap scrollbar-none transition-all duration-300 backdrop-blur-md ${
+                  theme === 'dark' ? 'bg-[#0a0a0a]/50 border-white/5' : 'bg-white/65 border-emerald-100'
                 }`}>
                   {/* Dynamic Active Subcategory Pill */}
                   {(() => {
@@ -1812,7 +1830,7 @@ export default function App() {
                             setActiveCategory('all');
                             setCurrentReelIndex(0);
                           }}
-                          className="px-3 py-1.5 rounded-full text-xs font-bold tracking-wide transition-all duration-300 cursor-pointer bg-emerald-600/35 dark:bg-emerald-400/30 backdrop-blur-md border border-emerald-500/50 text-[#1A5319] dark:text-[#4E9F3D] shadow-[0_4px_12px_rgba(16,185,129,0.15)] flex items-center space-x-1"
+                          className="px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wide transition-all duration-300 cursor-pointer bg-emerald-500/15 backdrop-blur-md border border-emerald-500/35 text-emerald-800 dark:text-[#4E9F3D] shadow-[0_2px_10px_rgba(78,159,61,0.15)] flex items-center space-x-1.5"
                         >
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                           <span>{lang === 'en' ? subNameEn : subNameBn}</span>
@@ -1842,10 +1860,10 @@ export default function App() {
                         setActiveCategory(categoryItem.id);
                         setCurrentReelIndex(0);
                       }}
-                      className={`px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 cursor-pointer ${
+                      className={`px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wide transition-all duration-300 cursor-pointer border ${
                         activeCategory === categoryItem.id 
-                          ? 'bg-emerald-600/25 dark:bg-emerald-400/20 backdrop-blur-md border border-emerald-500/35 text-[#1A5319] dark:text-[#4E9F3D] shadow-[0_4px_12px_rgba(16,185,129,0.1)]' 
-                          : 'bg-white/40 dark:bg-stone-900/40 backdrop-blur-sm border border-neutral-300/30 dark:border-white/10 text-neutral-500 dark:text-neutral-400 hover:bg-white/60 dark:hover:bg-stone-900/60'
+                          ? 'bg-emerald-500/10 border-emerald-500/35 text-[#1A5319] dark:text-[#4E9F3D] shadow-[0_4px_12px_rgba(78,159,61,0.1)]' 
+                          : 'bg-white/5 border-white/5 text-neutral-500 dark:text-neutral-400 hover:bg-white/10'
                       }`}
                     >
                       {categoryItem.label}
@@ -1878,23 +1896,23 @@ export default function App() {
                           initial={{ opacity: 0, y: 35, scale: 0.98 }}
                           whileInView={{ opacity: 1, y: 0, scale: 1 }}
                           viewport={{ once: true, margin: "-40px" }}
-                          whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                          whileHover={{ y: -4, transition: { duration: 0.25 } }}
                           transition={{ type: 'spring', stiffness: 120, damping: 14 }}
-                          className={`rounded-2xl border flex flex-col overflow-hidden transition-all duration-300 relative ${
+                          className={`rounded-[28px] border flex flex-col overflow-hidden transition-all duration-500 relative group/card pointer-events-auto ${
                             theme === 'dark' 
-                              ? 'bg-[#141414]/90 border-stone-800/80 shadow-[0_12px_24px_rgba(0,0,0,0.5)]' 
-                              : 'bg-white border-neutral-200/60 shadow-[0_8px_20px_rgba(26,83,25,0.06)]'
+                              ? 'bg-[#121412]/80 border-white/5 shadow-[0_16px_36px_rgba(0,0,0,0.6)] backdrop-blur-md hover:border-emerald-500/20' 
+                              : 'bg-white/95 border-emerald-500/10 shadow-[0_12px_24px_rgba(26,83,25,0.03)] backdrop-blur-md hover:border-emerald-500/20'
                           }`}
                         >
-                          {/* Top Media Banner Area with Tilt Zoom effect */}
-                          <div className="relative h-44 w-full bg-stone-900 overflow-hidden">
+                          {/* Top Media Banner Area with Zoom effect */}
+                          <div className="relative h-48 w-full bg-stone-955 overflow-hidden">
                             <motion.img 
                               src={item.imageUrl} 
                               alt={item.titleEn}
                               referrerPolicy="no-referrer"
                               animate={{ scale: isPlaying ? 1.08 : 1 }}
                               transition={{ duration: 0.4 }}
-                              className="w-full h-full object-cover opacity-85 hover:scale-105 transition-transform duration-500"
+                              className="w-full h-full object-cover opacity-90 group-hover/card:scale-105 transition-transform duration-700"
                             />
                             
                             {/* Animated Video Playing Layer if mock play state is active */}
@@ -1904,48 +1922,48 @@ export default function App() {
                                   initial={{ opacity: 0 }}
                                   animate={{ opacity: 1 }}
                                   exit={{ opacity: 0 }}
-                                  className="absolute inset-0 bg-black/60 flex flex-col justify-between p-3 animate-none"
+                                  className="absolute inset-0 bg-black/75 flex flex-col justify-between p-3.5 z-10 animate-none"
                                 >
                                   {/* Camera scanning guidelines */}
-                                  <div className="absolute inset-2 border border-white/10 pointer-events-none rounded-lg">
-                                    <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-emerald-400" />
-                                    <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-emerald-400" />
-                                    <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-emerald-400" />
-                                    <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-emerald-400" />
+                                  <div className="absolute inset-2.5 border border-emerald-500/20 pointer-events-none rounded-2xl">
+                                    <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-emerald-400" />
+                                    <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-emerald-400" />
+                                    <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-emerald-400" />
+                                    <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-emerald-400" />
                                   </div>
 
-                                  <div className="flex items-center justify-between z-10">
-                                    <span className="bg-red-600/90 text-white font-mono font-bold text-[8px] uppercase px-1.5 py-0.5 rounded flex items-center space-x-1 animate-pulse">
-                                      <span className="w-1.5 h-1.5 rounded-full bg-white" />
-                                      <span>LIVE YIELD VIEW</span>
+                                  <div className="flex items-center justify-between z-15">
+                                    <span className="bg-red-650 text-white font-mono font-bold text-[8px] uppercase px-2 py-0.5 rounded-full flex items-center space-x-1 animate-pulse">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                                      <span>LIVE SCAN STREAM</span>
                                     </span>
-                                    <span className="text-[8px] text-zinc-300 font-mono tracking-widest bg-black/35 px-1.5 py-0.5 rounded">
-                                      {item.zoneEn.toUpperCase()} FRAME
+                                    <span className="text-[8px] text-zinc-300 font-mono tracking-widest bg-white/10 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/5">
+                                      {item.zoneEn.toUpperCase()} LOGISTICS
                                     </span>
                                   </div>
 
                                   {/* Pulsate dynamic sound spectrum visualizer */}
-                                  <div className="flex items-end justify-center space-x-0.5 h-10 w-24 mx-auto mb-2 opacity-80">
-                                    {[8, 14, 22, 12, 18, 25, 10, 16, 20, 6].map((h, i) => (
+                                  <div className="flex items-end justify-center space-x-0.5 h-10 w-24 mx-auto mb-2 opacity-90">
+                                    {[8, 16, 24, 14, 20, 28, 12, 18, 22, 8].map((h, i) => (
                                       <motion.div 
                                         key={i}
-                                        className="w-1 bg-emerald-400 rounded-t"
-                                        animate={{ height: [h/2, h, h/3, h*1.2, h/2] }}
-                                        transition={{ duration: 1.2 + i*0.1, repeat: Infinity, ease: 'easeInOut' }}
+                                        className="w-1 bg-emerald-500 rounded-t-full"
+                                        animate={{ height: [h/2, h, h/3, h*1.1, h/2] }}
+                                        transition={{ duration: 1.0 + i*0.08, repeat: Infinity, ease: 'easeInOut' }}
                                       />
                                     ))}
                                   </div>
 
-                                  <p className="text-[9px] font-mono font-semibold text-emerald-300 text-center z-10 tracking-wide">
-                                    {lang === 'en' ? '🔒 SECURED SENSOR LOGS CAPTURE ACTIVE' : '🔒 নিরাপদ বায়ো-সেন্সর লগিং সক্রিয় আছে'}
+                                  <p className="text-[9px] font-mono font-bold text-emerald-400 text-center z-15 tracking-wider">
+                                    {lang === 'en' ? '🔒 SECURED BLOCKCHAIN LEDGER PREVIEW' : '🔒 নিরাপদ বায়ো-সেন্সর লগিং সক্রিয় আছে'}
                                   </p>
                                 </motion.div>
                               )}
                             </AnimatePresence>
 
                             {/* Velocity Logistics Zone Badge */}
-                            <div className="absolute top-2.5 left-2.5 flex items-center space-x-1 z-10">
-                              <span className={`text-[9px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full border backdrop-blur-md ${zoneBadgeColor}`}>
+                            <div className="absolute top-3 left-3 flex items-center space-x-1 z-10">
+                              <span className={`text-[8.5px] font-extrabold tracking-wider uppercase px-3 py-1 rounded-full border backdrop-blur-md shadow-sm ${zoneBadgeColor}`}>
                                 {lang === 'en' ? `Zone: ${item.zoneEn}` : `জোন: ${item.zoneBn}`}
                               </span>
                             </div>
@@ -1959,90 +1977,94 @@ export default function App() {
                                 showToast(
                                   playingVideos[item.id]
                                     ? (lang === 'en' ? 'Live stream paused' : 'লাইভ ভিডিও প্রিভিউ বন্ধ করা হয়েছে')
-                                    : (lang === 'en' ? 'Simulating High-Definition Live Yield video stream...' : 'হাই-ডেফিনিশন লাইভ ভিডিও প্রিভিউ চালু হচ্ছে...')
+                                    : (lang === 'en' ? 'Simulating High-Definition Live Yield video stream...' : 'হাই-ডেфিনিশন লাইভ ভিডিও প্রিভিউ চালু হচ্ছে...')
                                 );
                               }}
-                              className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/15 flex items-center justify-center text-white z-10 transition-transform active:scale-90 cursor-pointer"
+                              className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 hover:bg-black/85 backdrop-blur-md border border-white/10 flex items-center justify-center text-white z-10 transition-all hover:scale-105 active:scale-95 cursor-pointer"
                               title="Toggle Video Stream"
                             >
-                              {isPlaying ? <Square className="w-2.5 h-2.5 text-emerald-400 fill-current" /> : <Play className="w-2.5 h-2.5 text-white ml-0.5" />}
+                              {isPlaying ? <Square className="w-2.5 h-2.5 text-emerald-500 fill-current" /> : <Play className="w-2.5 h-2.5 text-white ml-0.5" />}
                             </button>
 
                             {/* Distance indicator overlay bottom-left */}
-                            <div className="absolute bottom-2 left-2 bg-black/55 backdrop-blur-sm px-2 py-0.5 rounded-lg border border-white/5 flex items-center space-x-0.5">
-                              <MapPin className="w-2.5 h-2.5 text-emerald-400" />
-                              <span className="text-[8.5px] text-zinc-200 font-bold font-mono">
+                            <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/5 flex items-center space-x-1">
+                              <MapPin className="w-3 h-3 text-emerald-400" />
+                              <span className="text-[9px] text-zinc-200 font-bold font-mono">
                                 {lang === 'en' ? `${item.distanceKm} km away` : `${convertNumber(item.distanceKm, lang)} কিমি দূরে`}
                               </span>
                             </div>
                           </div>
 
                           {/* Info panel */}
-                          <div className="p-3.5 flex-1 flex flex-col justify-between text-left space-y-3">
-                            <div className="space-y-1">
+                          <div className="p-4 flex-1 flex flex-col justify-between text-left space-y-4">
+                            <div className="space-y-2">
                               <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 font-mono">
+                                <span className="text-[9px] font-extrabold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-mono">
                                   {item.category}
                                 </span>
                                 
-                                {/* Upvote count action */}
+                                {/* Upvote pill badge */}
                                 <button
                                   id={`btn-upvote-${item.id}`}
                                   type="button"
                                   onClick={() => handleLikeReel(item.id)}
-                                  className="flex items-center space-x-1 hover:opacity-85 text-neutral-500 cursor-pointer"
+                                  className={`flex items-center space-x-1 px-2.5 py-0.5 rounded-full border transition-all cursor-pointer ${
+                                    hasLiked 
+                                      ? 'bg-rose-500/10 text-rose-500 border-rose-500/25 dark:text-rose-455' 
+                                      : 'bg-white/5 dark:bg-white/5 border-neutral-300/10 dark:border-white/5 text-neutral-500 hover:text-rose-500 hover:border-rose-500/20'
+                                  }`}
                                 >
-                                  <Heart className={`w-3.5 h-3.5 ${hasLiked ? 'text-rose-500 fill-current' : 'text-neutral-405'}`} />
-                                  <span className="text-[10px] font-mono font-bold text-neutral-400 dark:text-neutral-500">
+                                  <Heart className={`w-3.5 h-3.5 ${hasLiked ? 'fill-current text-rose-500' : 'text-neutral-400'}`} />
+                                  <span className="text-[10px] font-mono font-bold">
                                     {convertNumber(likesCountVal, lang)}
                                   </span>
                                 </button>
                               </div>
 
-                              <h3 className="text-sm font-bold text-neutral-800 dark:text-stone-100 font-display tracking-tight leading-tight">
+                              <h3 className="text-sm font-extrabold text-neutral-850 dark:text-stone-100 font-display tracking-tight leading-snug">
                                 {lang === 'en' ? item.titleEn : item.titleBn}
                               </h3>
 
-                              <p className="text-[10px] text-neutral-500 dark:text-stone-400 tracking-wide line-clamp-2">
+                              <p className="text-[10.5px] text-neutral-550 dark:text-stone-400 tracking-wide line-clamp-2 leading-relaxed font-sans">
                                 {lang === 'en' ? item.zoneDescEn : item.zoneDescBn}
                               </p>
                             </div>
 
                             {/* Seller Card Section */}
-                            <div className="flex items-center justify-between p-2 rounded-xl bg-neutral-100/65 dark:bg-stone-900/40 border border-neutral-200/30 dark:border-white/5">
-                              <div className="flex items-center space-x-1.5 min-w-0">
-                                <div className="w-6 h-6 rounded-lg bg-emerald-750 dark:bg-[#4E9F3D] flex items-center justify-center font-bold text-white font-mono text-[10px] flex-shrink-0">
+                            <div className="flex items-center justify-between p-2.5 rounded-2xl bg-neutral-100/50 dark:bg-white/5 border border-neutral-250/10 dark:border-white/5">
+                              <div className="flex items-center space-x-2 min-w-0">
+                                <div className="w-7 h-7 rounded-xl bg-emerald-600 dark:bg-[#4E9F3D] flex items-center justify-center font-bold text-white font-mono text-[11px] flex-shrink-0 shadow-sm">
                                   {item.sellerEn[0]}
                                 </div>
                                 <div className="truncate">
-                                  <p className="text-[9.5px] font-bold text-neutral-700 dark:text-stone-200 flex items-center">
+                                  <p className="text-[10px] font-extrabold text-neutral-805 dark:text-stone-200 flex items-center leading-none">
                                     <span className="truncate">{lang === 'en' ? item.sellerEn : item.sellerBn}</span>
-                                    <Shield className="w-3 h-3 text-emerald-500 dark:text-emerald-400 ml-1 flex-shrink-0" />
+                                    <Shield className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-450 ml-1 flex-shrink-0" />
                                   </p>
-                                  <p className="text-[8px] text-emerald-700 dark:text-emerald-400 font-bold font-mono">
+                                  <p className="text-[8.5px] text-emerald-700 dark:text-emerald-400 font-bold font-mono mt-0.5">
                                     {t.trustScore}: {convertNumber(item.sellerRating, lang)}★ ({convertNumber(item.sellerJobs, lang)} escrows)
                                   </p>
                                 </div>
                               </div>
 
                               <div className="text-right flex-shrink-0">
-                                <span className="text-[8.5px] bg-[#1A5319]/5 border border-[#1A5319]/15 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-300 px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">
-                                  {lang === 'en' ? 'SAAO Verified' : 'এসএএও প্রত্যয়িত'}
+                                <span className="text-[8px] bg-[#1A5319]/10 border border-[#1A5319]/25 text-emerald-800 dark:text-emerald-350 dark:bg-emerald-500/10 dark:border-emerald-500/25 px-2 py-0.5 rounded-full font-extrabold uppercase tracking-widest font-mono">
+                                  ✓ verified
                                 </span>
                               </div>
                             </div>
 
                             {/* Logistics Stocks and Price Showcase */}
-                            <div className="grid grid-cols-2 gap-2 text-xs py-1.5 border-y border-neutral-200/50 dark:border-stone-850/85">
+                            <div className="grid grid-cols-2 gap-3 py-2 border-y border-neutral-200/50 dark:border-white/5 font-mono">
                               <div className="text-left">
-                                <span className="text-[8.5px] text-neutral-400 block uppercase font-bold tracking-wider">{t.stockPrefix}</span>
-                                <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xs font-mono">
+                                <span className="text-[8.5px] text-neutral-450 block uppercase font-bold tracking-wider mb-0.5">{t.stockPrefix}</span>
+                                <span className="font-extrabold text-emerald-600 dark:text-emerald-450 text-xs">
                                   {lang === 'en' ? item.stockEn : item.stockBn}
                                 </span>
                               </div>
-                              <div className="text-right border-l border-neutral-200/40 dark:border-stone-850 pl-2">
-                                <span className="text-[8.5px] text-neutral-400 block uppercase font-bold tracking-wider">{lang === 'en' ? 'Base price' : 'ভিত্তি মূল্য'}</span>
-                                <span className="font-extrabold text-[#1A5319] dark:text-[#52c41a] text-xs font-mono">
+                              <div className="text-right border-l border-neutral-200/40 dark:border-white/5 pl-3">
+                                <span className="text-[8.5px] text-neutral-450 block uppercase font-bold tracking-wider mb-0.5">{lang === 'en' ? 'Base price' : 'ভিত্তি মূল্য'}</span>
+                                <span className="font-extrabold text-emerald-600 dark:text-emerald-450 text-xs">
                                   {lang === 'en' ? `${item.pricePerUnitEn} / ${item.unitEn}` : `${item.pricePerUnitBn} / ${item.unitBn}`}
                                 </span>
                               </div>
@@ -2050,18 +2072,18 @@ export default function App() {
 
                             {/* Real-time Bid Status Summary on Card */}
                             {activeBids.length > 0 && (
-                              <div className="p-2 rounded-lg bg-yellow-500/5 border border-yellow-500/20 text-left space-y-1">
+                              <div className="p-2.5 rounded-xl bg-yellow-500/5 border border-yellow-500/25 text-left space-y-1">
                                 <div className="flex items-center justify-between">
-                                  <span className="text-[8.5px] font-bold text-yellow-600 dark:text-yellow-400 uppercase tracking-widest font-mono flex items-center">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mr-1 animate-ping" />
+                                  <span className="text-[8.5px] font-extrabold text-yellow-600 dark:text-yellow-450 uppercase tracking-widest font-mono flex items-center">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mr-1.5 animate-ping" />
                                     {lang === 'en' ? 'Active Offers' : 'সক্রিয় দরপ্রস্তাব'}
                                   </span>
-                                  <span className="text-[8px] font-bold font-mono text-neutral-400">
+                                  <span className="text-[8px] font-extrabold font-mono text-neutral-400">
                                     {lang === 'en' ? `${activeBids.length} Bid(s)` : `${convertNumber(activeBids.length, lang)} প্রস্তাব`}
                                   </span>
                                 </div>
-                                <div className="text-[9.5px] text-neutral-600 dark:text-neutral-400 font-mono truncate">
-                                  🏆 {lang === 'en' ? 'Highest bid' : 'সর্বোচ্চ দর'}: <span className="font-bold text-emerald-500">
+                                <div className="text-[10px] text-neutral-600 dark:text-neutral-400 font-mono truncate leading-none mt-0.5">
+                                  🏆 {lang === 'en' ? 'Highest bid' : 'সর্বোচ্চ দর'}: <span className="font-extrabold text-emerald-500">
                                     {Math.max(...activeBids.map(b => b.bidPrice))} BDT
                                   </span> {lang === 'en' ? `by ${activeBids[activeBids.length - 1].bidderName}` : `(${activeBids[activeBids.length - 1].bidderName})`}
                                 </div>
@@ -2076,16 +2098,16 @@ export default function App() {
                                 setActiveCommentsListing(item);
                                 setShowCommentsDrawer(true);
                               }}
-                              className="text-[10px] text-neutral-500 dark:text-stone-400 hover:text-emerald-600 flex items-center justify-start space-x-1 cursor-pointer py-0.5 text-left font-mono"
+                              className="text-[10px] text-neutral-450 dark:text-neutral-450 hover:text-emerald-500 flex items-center justify-start space-x-1 cursor-pointer py-0.5 text-left font-mono"
                             >
                               <span>💬</span>
-                              <span className="underline hover:text-emerald-500 font-semibold text-left">
+                              <span className="underline font-bold hover:text-emerald-500">
                                 {lang === 'en' ? `Discussion Board (${item.comments.length} notes)` : `আলোচনা বোর্ড (${convertNumber(item.comments.length, lang)} মন্তব্য)`}
                               </span>
                             </button>
 
                             {/* Dual action buttons + BID & OFFER BUTTON */}
-                            <div className="grid grid-cols-3 gap-1.5 pt-1">
+                            <div className="grid grid-cols-3 gap-2 pt-1 font-display">
                               
                               {/* Bid & Negotiate Button */}
                               <button
@@ -2098,10 +2120,10 @@ export default function App() {
                                   setBidNotesInput('');
                                   showToast(lang === 'en' ? `Loading secure ledger bidding for ${item.titleEn}...` : `দরপ্রস্তাব সিস্টেম লোড হচ্ছে...`);
                                 }}
-                                className="bg-amber-500 hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-500 text-stone-900 dark:text-white font-extrabold py-2 px-1 rounded-xl text-[10px] tracking-wide transition-all shadow-sm flex flex-col items-center justify-center cursor-pointer border border-amber-400/25 active:scale-95 scale-100"
+                                className="bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/35 text-amber-600 dark:text-amber-400 font-extrabold py-2 px-1.5 rounded-2xl text-[10px] tracking-wide transition-all shadow-sm flex flex-col items-center justify-center cursor-pointer active:scale-95 duration-200"
                               >
-                                <span className="text-[10px]">⚖️</span>
-                                <span className="font-display font-bold uppercase tracking-wider">{lang === 'en' ? 'Bid Now' : 'দাম বলুন'}</span>
+                                <span className="text-[11px] mb-0.5">⚖️</span>
+                                <span className="font-bold uppercase tracking-wider">{lang === 'en' ? 'Bid Now' : 'দাম বলুন'}</span>
                               </button>
 
                               {/* Instant Buy Button */}
@@ -2113,10 +2135,10 @@ export default function App() {
                                   setCheckoutStep('select');
                                   setEscrowStatus('NONE');
                                 }}
-                                className="bg-[#1A5319] hover:bg-emerald-800 dark:bg-[#4E9F3D] dark:hover:bg-emerald-600 text-white font-extrabold py-2 px-1 rounded-xl text-[10px] tracking-wide transition-all shadow-sm flex flex-col items-center justify-center cursor-pointer active:scale-95 scale-100"
+                                className="bg-gradient-to-tr from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white font-extrabold py-2 px-1.5 rounded-2xl text-[10px] tracking-wide transition-all shadow-md flex flex-col items-center justify-center cursor-pointer active:scale-95 duration-200 glow-accent"
                               >
-                                <span>⚡</span>
-                                <span className="font-display font-bold uppercase tracking-wider">{t.instantBuy}</span>
+                                <span className="text-[11px] mb-0.5">⚡</span>
+                                <span className="font-bold uppercase tracking-wider">{t.instantBuy}</span>
                               </button>
 
                               {/* Chat & Deal Button */}
@@ -2128,10 +2150,10 @@ export default function App() {
                                   setSelectedChatRole('buyer');
                                   showToast(lang === 'en' ? `Opening transparent negotiation with ${item.sellerEn}` : `${item.sellerBn}-এর সাথে চ্যাট চালু হচ্ছে...`);
                                 }}
-                                className="bg-stone-900 hover:bg-stone-850 dark:bg-stone-800 dark:hover:bg-stone-750 border border-neutral-350/10 dark:border-white/10 text-white font-extrabold py-2 px-1 rounded-xl text-[10px] tracking-wide transition-all shadow-sm flex flex-col items-center justify-center cursor-pointer active:scale-95 scale-100"
+                                className="bg-white/5 border border-white/5 text-neutral-400 hover:bg-white/10 hover:text-white font-extrabold py-2 px-1.5 rounded-2xl text-[10px] tracking-wide transition-all shadow-sm flex flex-col items-center justify-center cursor-pointer active:scale-95 duration-200"
                               >
-                                <span>💬</span>
-                                <span className="font-display font-bold uppercase tracking-wider">{lang === 'en' ? 'Chat' : 'চ্যাট'}</span>
+                                <span className="text-[11px] mb-0.5">💬</span>
+                                <span className="font-bold uppercase tracking-wider">{lang === 'en' ? 'Chat' : 'চ্যাট'}</span>
                               </button>
 
                             </div>
@@ -2242,57 +2264,59 @@ export default function App() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="absolute inset-0 bg-black/60 backdrop-blur-sm z-50 flex flex-col justify-end"
+                      className="absolute inset-0 bg-neutral-950/70 backdrop-blur-md z-50 flex flex-col justify-end"
                     >
                       {/* Clicking outside closes the drawer */}
-                      <div className="absolute inset-0 z-0" onClick={() => setBiddingListing(null)} />
+                      <div className="absolute inset-0 z-0 pointer-events-auto" onClick={() => setBiddingListing(null)} />
 
                       <motion.div
                         initial={{ y: "100%" }}
                         animate={{ y: 0 }}
                         exit={{ y: "100%" }}
-                        transition={{ type: 'spring', damping: 20 }}
-                        className={`rounded-t-3xl p-4 flex flex-col space-y-4 z-10 max-h-[92%] relative overflow-y-auto ${
-                          theme === 'dark' ? 'bg-[#121212] border-t border-stone-800' : 'bg-white border-t border-emerald-100'
+                        transition={{ type: 'spring', damping: 25, stiffness: 220 }}
+                        className={`rounded-t-[36px] p-5 flex flex-col space-y-5 z-10 max-h-[94%] relative overflow-y-auto pointer-events-auto border-t ${
+                          theme === 'dark' 
+                            ? 'bg-[#0B0E0B]/95 backdrop-blur-xl border-emerald-500/10 shadow-[0_-12px_40px_rgba(0,0,0,0.8)] text-[#e2ebd9]' 
+                            : 'bg-white/95 backdrop-blur-xl border-emerald-500/15 shadow-[0_-12px_32px_rgba(26,83,25,0.06)] text-stone-900'
                         }`}
                       >
                         {/* Drag Handle aesthetic indicator */}
-                        <div className="w-12 h-1 bg-neutral-300 dark:bg-stone-800 rounded-full mx-auto mb-1" />
+                        <div className="w-12 h-1 bg-emerald-500/25 dark:bg-white/10 rounded-full mx-auto mb-1" />
 
                         {/* Drawer Header details */}
                         <div className="flex items-start justify-between">
                           <div className="text-left">
-                            <h3 className="text-xs font-bold uppercase tracking-widest text-amber-500 font-mono">
+                            <h3 className="text-[10px] font-extrabold uppercase tracking-wider text-amber-500 font-mono">
                               {lang === 'en' ? '🔐 AgroTrust Smart Bid Protocol' : '🔐 এগ্রোট্রাস্ট স্মার্ট দরপ্রস্তাব'}
                             </h3>
-                            <h2 className="text-sm font-bold text-neutral-850 dark:text-stone-100 font-display">
+                            <h2 className="text-base font-extrabold text-neutral-850 dark:text-stone-100 font-display tracking-tight mt-0.5">
                               {lang === 'en' ? biddingListing.titleEn : biddingListing.titleBn}
                             </h2>
                           </div>
                           <button
                             id="btn-bidding-close"
                             onClick={() => setBiddingListing(null)}
-                            className="p-1 rounded-full text-neutral-400 hover:bg-neutral-100 dark:hover:bg-stone-900 cursor-pointer"
+                            className="p-1.5 rounded-full text-neutral-400 hover:bg-neutral-100 dark:hover:bg-white/5 cursor-pointer transition-all duration-200"
                           >
                             <X className="w-4 h-4" />
                           </button>
                         </div>
 
                         {/* Product Summary Mini Card */}
-                        <div className="flex items-center space-x-3 p-2 rounded-xl bg-neutral-100/50 dark:bg-stone-900/50 border border-neutral-200/35 dark:border-white/5 text-left">
+                        <div className="flex items-center space-x-3 p-3 rounded-2xl bg-neutral-100/50 dark:bg-white/5 border border-neutral-200/25 dark:border-white/5 text-left">
                           <img 
                             src={biddingListing.imageUrl} 
                             alt="" 
-                            className="w-12 h-12 rounded-lg object-cover"
+                            className="w-12 h-12 rounded-xl object-cover shadow-sm"
                           />
                           <div className="flex-1 min-w-0">
-                            <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest leading-none">
+                            <p className="text-[9px] font-extrabold text-neutral-450 uppercase tracking-widest leading-none mb-1">
                               {lang === 'en' ? 'Current listed price' : 'বর্তমান নির্ধারিত দর'}
                             </p>
-                            <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 font-mono">
+                            <p className="text-xs font-extrabold text-emerald-600 dark:text-emerald-450 font-mono leading-none">
                               {lang === 'en' ? `${biddingListing.pricePerUnitEn} / ${biddingListing.unitEn}` : `${biddingListing.pricePerUnitBn} / ${biddingListing.unitBn}`}
                             </p>
-                            <p className="text-[9px] text-neutral-500 truncate leading-snug">
+                            <p className="text-[9.5px] text-neutral-500 truncate leading-snug mt-1 font-mono">
                               👤 {lang === 'en' ? biddingListing.sellerEn : biddingListing.sellerBn} ({convertNumber(biddingListing.sellerRating, lang)}★)
                             </p>
                           </div>
@@ -2300,15 +2324,15 @@ export default function App() {
 
                         {/* Ledger Hash Animation loader when bidding is pending */}
                         {biddingLoading ? (
-                          <div className="p-8 text-center flex flex-col items-center justify-center space-y-3">
+                          <div className="p-8 text-center flex flex-col items-center justify-center space-y-4">
                             <div className="relative w-12 h-12 flex items-center justify-center">
-                              <span className="absolute inset-0 rounded-full border-2 border-dashed border-amber-500 animate-spin" />
+                              <span className="absolute inset-0 rounded-full border-2 border-dashed border-amber-500/80 animate-spin" />
                             </div>
-                            <div className="space-y-1">
-                              <p className="text-xs font-bold text-amber-500 font-mono tracking-wider animate-pulse uppercase">
+                            <div className="space-y-1.5">
+                              <p className="text-xs font-extrabold text-amber-500 font-mono tracking-wider animate-pulse uppercase">
                                 {lang === 'en' ? 'COMPILING LEDGER ESCROW terms...' : 'এসক্রো চুক্তি কোড সংকলন হচ্ছে...'}
                               </p>
-                              <p className="text-[10px] text-neutral-400 max-w-[240px] leading-relaxed mx-auto">
+                              <p className="text-[10px] text-neutral-450 max-w-[240px] leading-relaxed mx-auto font-sans">
                                 {lang === 'en' 
                                   ? 'Signing with digital fingerprint keys and matching SAAO security limits...'
                                   : 'ডিজিটাল কী দ্বারা দস্তখত এবং এসএএও ট্রাস্ট লিমিট মেলানো হচ্ছে...'}
@@ -2316,14 +2340,14 @@ export default function App() {
                             </div>
                           </div>
                         ) : (
-                          <form id="form-ledger-bid" onSubmit={handlePlaceBid} className="space-y-4">
+                          <form id="form-ledger-bid" onSubmit={handlePlaceBid} className="space-y-5">
                             
                             {/* Preset bid increments section */}
-                            <div className="space-y-1">
+                            <div className="space-y-1.5">
                               <span className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider text-left block">
                                 {lang === 'en' ? '⚡ Click Presets Multipliers' : '⚡ দ্রুত নির্ধারণের প্রেসেন্ট'}
                               </span>
-                              <div className="grid grid-cols-3 gap-1.5 pt-0.5">
+                              <div className="grid grid-cols-3 gap-2 pt-0.5">
                                 {[
                                   { labelEn: '-5% Discount', labelBn: '-৫% কমিশন', pct: 0.95 },
                                   { labelEn: 'Listed Price', labelBn: 'নির্ধারিত মূল্য', pct: 1.0 },
@@ -2340,16 +2364,16 @@ export default function App() {
                                         setBidPriceInput(String(calculatedPrice));
                                         showToast(lang === 'en' ? `Preset calculated: ${calculatedPrice} BDT` : `মূল্য হিসাব করা হয়েছে: ${calculatedPrice} টাকা`);
                                       }}
-                                      className={`px-2 py-2 rounded-xl text-left border transition-all flex flex-col justify-between cursor-pointer ${
+                                      className={`px-3 py-2.5 rounded-2xl text-left border transition-all flex flex-col justify-between cursor-pointer duration-300 ${
                                         parseInt(bidPriceInput) === calculatedPrice
-                                          ? 'border-amber-500 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold'
-                                          : 'border-neutral-200 dark:border-stone-850 hover:bg-neutral-100 dark:hover:bg-stone-900/60 text-[#212121]/80 dark:text-stone-300 bg-transparent'
+                                          ? 'border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-extrabold shadow-[0_4px_12px_rgba(245,158,11,0.15)] scale-102'
+                                          : 'border-neutral-200 dark:border-white/5 hover:bg-neutral-100/50 dark:hover:bg-white/5 text-neutral-600 dark:text-stone-300 bg-transparent'
                                       }`}
                                     >
                                       <span className="text-[8px] uppercase tracking-wide block text-neutral-400">
                                         {lang === 'en' ? preset.labelEn : preset.labelBn}
                                       </span>
-                                      <span className="text-xs font-mono font-bold pt-0.5 leading-none">
+                                      <span className="text-xs font-mono font-extrabold pt-0.5 leading-none">
                                         {calculatedPrice} BDT
                                       </span>
                                     </button>
@@ -2373,9 +2397,9 @@ export default function App() {
                                     value={bidPriceInput}
                                     onChange={(e) => setBidPriceInput(e.target.value)}
                                     placeholder="e.g. 50"
-                                    className="w-full pl-3 pr-10 py-2.5 rounded-xl border border-neutral-300 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 font-mono text-sm focus:ring-2 focus:ring-amber-500 outline-none"
+                                    className="w-full pl-3.5 pr-10 py-3 rounded-2xl border border-neutral-250 dark:border-white/5 bg-neutral-100/35 dark:bg-[#070907]/50 font-mono text-sm focus:ring-1 focus:ring-amber-500/50 focus:border-amber-500/50 outline-none transition-all text-neutral-850 dark:text-stone-100"
                                   />
-                                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] font-bold font-mono text-neutral-400">
+                                  <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[9px] font-bold font-mono text-neutral-400">
                                     BDT
                                   </span>
                                 </div>
@@ -2393,9 +2417,9 @@ export default function App() {
                                     value={bidQuantityInput}
                                     onChange={(e) => setBidQuantityInput(e.target.value)}
                                     placeholder="e.g. 100"
-                                    className="w-full pl-3 pr-12 py-2.5 rounded-xl border border-neutral-300 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 font-mono text-sm focus:ring-2 focus:ring-amber-500 outline-none"
+                                    className="w-full pl-3.5 pr-12 py-3 rounded-2xl border border-neutral-250 dark:border-white/5 bg-neutral-100/35 dark:bg-[#070907]/50 font-mono text-sm focus:ring-1 focus:ring-amber-500/50 focus:border-amber-500/50 outline-none transition-all text-neutral-850 dark:text-stone-100"
                                   />
-                                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] font-bold font-mono text-neutral-400 uppercase truncate max-w-[40px]" title={biddingListing.unitEn}>
+                                  <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[9px] font-bold font-mono text-neutral-400 uppercase truncate max-w-[40px]" title={biddingListing.unitEn}>
                                     {biddingListing.unitEn.split(' ')[0]}
                                   </span>
                                 </div>
@@ -2414,16 +2438,16 @@ export default function App() {
                                 value={bidNotesInput}
                                 onChange={(e) => setBidNotesInput(e.target.value)}
                                 placeholder={lang === 'en' ? 'e.g. Will collect tonight self-arranged / Refrigerated van storage...' : 'যেমন: আজ রাতে নিজ উদ্যোগে সংগ্রহ করব / প্লাস্টিক ক্রেটস প্যাকেজিং...'}
-                                className="w-full px-3 py-2 rounded-xl border border-neutral-300 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-xs focus:ring-2 focus:ring-amber-500 outline-none resize-none"
+                                className="w-full px-3.5 py-2.5 rounded-2xl border border-neutral-250 dark:border-white/5 bg-neutral-100/35 dark:bg-[#070907]/50 text-xs focus:ring-1 focus:ring-amber-500/50 focus:border-amber-500/50 outline-none resize-none transition-all font-sans text-neutral-850 dark:text-stone-100"
                               />
                             </div>
 
                             {/* Trust information footer banner */}
-                            <div className="flex items-start space-x-2 p-2 rounded-xl bg-emerald-500/5 border border-emerald-500/10 text-left">
-                              <span className="text-emerald-500 pt-0.5">🛡️</span>
-                              <p className="text-[9.5px] text-emerald-800 dark:text-emerald-300 leading-snug">
+                            <div className="flex items-start space-x-2.5 p-3.5 rounded-2xl bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/15 text-left">
+                              <span className="text-emerald-500 pt-0.5 text-xs">🛡️</span>
+                              <p className="text-[10px] text-emerald-800 dark:text-emerald-300 leading-normal font-sans">
                                 {lang === 'en' 
-                                  ? 'Secure escrow guarantee: Farmer must accept terms on blockchain ledger before any payment is authorized. Zero payment risk.'
+                                  ? 'Secure escrow guarantee: Farmer must accept SAAO terms before any payment is authorized. Zero payment risk.'
                                   : 'নিরাপদ এসক্রো গ্যারান্টি: বিক্রেতা কৃষক ডিজিটালভাবে প্রস্তাব গ্রহণ করার পরই পেমেন্ট অনুমোদিত হবে। পেমেন্ট হারানোর কোনো ঝুঁকি নেই।'}
                               </p>
                             </div>
@@ -2432,7 +2456,7 @@ export default function App() {
                             <button
                               id="btn-ledger-bid-submit"
                               type="submit"
-                              className="w-full py-3 bg-gradient-to-tr from-amber-500 to-yellow-600 dark:from-amber-600 dark:to-yellow-500 hover:from-amber-600 hover:to-yellow-700 text-stone-900 dark:text-white font-black rounded-xl text-xs uppercase tracking-widest transition-transform active:scale-95 shadow-md flex items-center justify-center space-x-2 cursor-pointer"
+                              className="w-full py-3.5 bg-gradient-to-tr from-amber-500 to-yellow-600 dark:from-amber-600 dark:to-yellow-500 hover:from-amber-600 hover:to-yellow-700 text-stone-900 dark:text-white font-black rounded-2xl text-xs uppercase tracking-widest transition-all active:scale-95 shadow-md flex items-center justify-center space-x-2 cursor-pointer duration-200"
                             >
                               <span>⚖️</span>
                               <span>{lang === 'en' ? 'Commit Official Bid Proposal' : 'অফিসিয়াল দরপ্রস্তাব দাখিল করুন'}</span>
@@ -2442,8 +2466,7 @@ export default function App() {
                         )}
                       </motion.div>
                     </motion.div>
-                  )}
-                </AnimatePresence>
+                  )}\n                </AnimatePresence>
 
               </motion.div>
             )}
@@ -2585,12 +2608,14 @@ export default function App() {
                     </div>
 
                     {/* 2. Interactive Graphical Chart Section */}
-                    <div className={`p-4 rounded-2xl border transition-all duration-300 ${
-                      theme === 'dark' ? 'bg-[#121212]/90 border-stone-850 shadow-none' : 'bg-white border-emerald-500/15 shadow-sm'
+                    <div className={`p-4 rounded-[28px] border transition-all duration-500 relative overflow-hidden pointer-events-auto ${
+                      theme === 'dark' 
+                        ? 'bg-[#121412]/80 border-white/5 shadow-[0_16px_36px_rgba(0,0,0,0.4)] backdrop-blur-md hover:border-emerald-500/20' 
+                        : 'bg-white/95 border-emerald-500/10 shadow-[0_12px_24px_rgba(26,83,25,0.03)] backdrop-blur-md hover:border-emerald-500/20'
                     }`}>
                       <div className="flex items-center justify-between mb-3">
                         <div>
-                          <h4 className="text-xs font-bold text-[#1A5319] dark:text-[#4E9F3D] uppercase tracking-wider">
+                          <h4 className="text-xs font-bold text-[#1A5319] dark:text-[#4E9F3D] uppercase tracking-wider font-display">
                             {lang === 'en' ? 'Agro-Yield Sales Trend' : 'ফসলের বিক্রয় প্রবণতা সূচক'}
                           </h4>
                           <p className="text-[8.5px] text-neutral-400 font-mono">
@@ -2599,7 +2624,7 @@ export default function App() {
                         </div>
 
                         {/* Chart filter buttons */}
-                        <div className="flex bg-neutral-100 dark:bg-stone-900 border border-neutral-200/50 dark:border-white/5 p-0.5 rounded-lg">
+                        <div className="flex bg-neutral-100 dark:bg-white/5 border border-neutral-200/50 dark:border-white/5 p-0.5 rounded-xl">
                           {(['day', 'month', 'year'] as const).map((filter) => (
                             <button
                               key={filter}
@@ -2607,9 +2632,9 @@ export default function App() {
                                 setAnalyticsFilter(filter);
                                 setHoveredChartIndex(null);
                               }}
-                              className={`px-2 py-1 rounded text-[8px] font-bold uppercase transition-all duration-300 cursor-pointer ${
+                              className={`px-3 py-1 rounded-lg text-[8.5px] font-bold uppercase transition-all duration-300 cursor-pointer ${
                                 analyticsFilter === filter
-                                  ? 'bg-[#1A5319] dark:bg-[#4E9F3D] text-white shadow-sm'
+                                  ? 'bg-gradient-to-tr from-emerald-600 to-emerald-500 text-white shadow-md'
                                   : 'text-neutral-400 hover:text-neutral-200'
                               }`}
                             >
@@ -2621,7 +2646,6 @@ export default function App() {
 
                       {/* SVG line-graph render logic */}
                       {(() => {
-                        // Let's configure custom data profiles for day, month, year
                         const chartData = analyticsFilter === 'day' 
                           ? [
                               { label: lang === 'en' ? "Sat" : "শনি", val: 24, mt: 1.2 },
@@ -2647,23 +2671,19 @@ export default function App() {
                               { label: "2026", val: 2100, mt: 105.0 }
                             ];
 
-                        // Width & height values for graph canvas
                         const width = 340;
                         const height = 150;
                         const padding = 22;
 
-                        // Calculate max value for coordinate scaling
                         const maxVal = Math.max(...chartData.map(d => d.val)) * 1.15;
                         const minVal = 0;
 
-                        // Compute points coordinates
                         const points = chartData.map((d, idx) => {
                           const x = padding + (idx * (width - 2 * padding)) / (chartData.length - 1);
                           const y = height - padding - ((d.val - minVal) / (maxVal - minVal)) * (height - 2 * padding);
                           return { x, y, ...d };
                         });
 
-                        // Build path for stroke & gradient filling
                         const pathD = points.reduce((acc, p, idx) => {
                           return idx === 0 ? `M ${p.x} ${p.y}` : `${acc} L ${p.x} ${p.y}`;
                         }, "");
@@ -2674,14 +2694,13 @@ export default function App() {
 
                         return (
                           <div className="relative font-mono">
-                            {/* Dynamic Floating interactive Tooltip inside the chart */}
                             <div className="h-[155px] w-full relative">
-                              <svg className="w-full h-full" viewBox={`0 0 ${width} ${height}`}>
+                              <svg className="w-full h-full animate-fade-in" viewBox={`0 0 ${width} ${height}`}>
                                 <defs>
                                   <linearGradient id="glowArea" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor="#4E9F3D" stopOpacity="0.3" />
-                                    <stop offset="10%" stopColor="#4E9F3D" stopOpacity="0.25" />
-                                    <stop offset="100%" stopColor="#4E9F3D" stopOpacity="0.0" />
+                                    <stop offset="0%" stopColor="#10b981" stopOpacity="0.4" />
+                                    <stop offset="50%" stopColor="#10b981" stopOpacity="0.15" />
+                                    <stop offset="100%" stopColor="#10b981" stopOpacity="0.0" />
                                   </linearGradient>
                                 </defs>
 
@@ -2711,11 +2730,11 @@ export default function App() {
                                   <path 
                                     d={pathD} 
                                     fill="none" 
-                                    stroke={theme === 'dark' ? "#4E9F3D" : "#1A5319"} 
-                                    strokeWidth="2.5" 
+                                    stroke={theme === 'dark' ? "#10b981" : "#059669"} 
+                                    strokeWidth="3" 
                                     strokeLinecap="round" 
                                     strokeLinejoin="round"
-                                    className="transition-all duration-300"
+                                    className="transition-all duration-300 drop-shadow-[0_2px_8px_rgba(16,185,129,0.3)]"
                                   />
                                 )}
 
@@ -2727,19 +2746,19 @@ export default function App() {
                                       <circle 
                                         cx={p.x} 
                                         cy={p.y} 
-                                        r="8" 
-                                        fill={theme === 'dark' ? "#4E9F3D" : "#1A5319"} 
-                                        opacity="0.2" 
+                                        r="9" 
+                                        fill="#10b981" 
+                                        opacity="0.3" 
                                         className="animate-ping"
                                       />
                                     )}
                                     <circle 
                                       cx={p.x} 
                                       cy={p.y} 
-                                      r={hoveredChartIndex === idx ? 5 : 3.5} 
-                                      fill={hoveredChartIndex === idx ? "#FFF" : (theme === 'dark' ? "#4E9F3D" : "#1A5319")} 
-                                      stroke={hoveredChartIndex === idx ? (theme === 'dark' ? "#4E9F3D" : "#1A5319") : "none"}
-                                      strokeWidth="1.5"
+                                      r={hoveredChartIndex === idx ? 5.5 : 3.5} 
+                                      fill={hoveredChartIndex === idx ? "#FFF" : "#10b981"} 
+                                      stroke={hoveredChartIndex === idx ? "#059669" : "none"}
+                                      strokeWidth="2"
                                       className="transition-all duration-200 cursor-pointer"
                                       onMouseEnter={() => setHoveredChartIndex(idx)}
                                       onMouseLeave={() => setHoveredChartIndex(null)}
@@ -2754,7 +2773,7 @@ export default function App() {
                                     x={p.x}
                                     y={height - 5}
                                     textAnchor="middle"
-                                    className="fill-neutral-400 font-bold font-mono"
+                                    className="fill-neutral-400 font-extrabold font-mono"
                                     style={{ fontSize: '8px' }}
                                   >
                                     {p.label}
@@ -2763,32 +2782,31 @@ export default function App() {
                               </svg>
                             </div>
 
-                            {/* Interactive Stats Details Box reflecting user's hovered coordinate node */}
+                            {/* Interactive Stats Details Box */}
                             {hoveredChartIndex !== null ? (
-                              <div className="mt-2 p-2 bg-emerald-500/10 border border-emerald-500/25 rounded-lg flex items-center justify-between text-[9.5px]">
+                              <div className="mt-3 p-3 bg-emerald-500/10 border border-emerald-500/25 rounded-2xl flex items-center justify-between text-[10px] font-mono shadow-[0_4px_12px_rgba(16,185,129,0.15)] animate-fade-in">
                                 <div className="flex items-center space-x-2">
-                                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                                  <span className="font-bold text-neutral-400">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                  <span className="font-extrabold text-neutral-400">
                                     {points[hoveredChartIndex].label}:
                                   </span>
-                                  <span className="font-bold text-neutral-700 dark:text-white">
+                                  <span className="font-extrabold text-neutral-850 dark:text-white">
                                     {convertNumber(points[hoveredChartIndex].val * (analyticsFilter === 'year' ? 1000 : 1000), lang)} ৳
                                   </span>
                                 </div>
-                                <span className="text-emerald-500 font-bold">
+                                <span className="text-emerald-500 font-extrabold font-mono">
                                   {lang === 'en' ? 'Volume' : 'পরিমাণ'}: {convertNumber(points[hoveredChartIndex].mt, lang)} MT
                                 </span>
                               </div>
                             ) : (
-                              <div className="mt-2 p-2 bg-neutral-100 dark:bg-stone-900 border border-neutral-200/40 dark:border-white/5 rounded-lg text-center text-neutral-400 text-[9px]">
+                              <div className="mt-3 p-3 bg-neutral-100/35 dark:bg-white/5 border border-neutral-250/10 dark:border-white/5 rounded-2xl text-center text-neutral-400 text-[9.5px]">
                                 {lang === 'en' ? '👋 Hover over data nodes to inspect revenue metrics' : '👋 বিস্তারিত পরিমাপ যাচাই করতে গ্রাফের বিন্দুর ওপর মাউস রাখুন'}
                               </div>
                             )}
                           </div>
                         );
                       })()}
-                    </div>
-
+                    </div>\n
                     {/* 3. Escrow Order Tracking Log list */}
                     <div className={`p-4 rounded-2xl border transition-all duration-300 ${
                       theme === 'dark' ? 'bg-[#121212]/90 border-stone-850' : 'bg-white border-[#1A5319]/10'
@@ -3586,49 +3604,51 @@ export default function App() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-neutral-950/80 backdrop-blur-md z-50 flex flex-col justify-end"
+              className="absolute inset-0 bg-neutral-955/80 backdrop-blur-md z-50 flex flex-col justify-end"
             >
               {/* Tap background to minimize */}
-              <div className="flex-1" onClick={() => setActiveChatListing(null)} />
+              <div className="flex-1 pointer-events-auto" onClick={() => setActiveChatListing(null)} />
               
               <motion.div
                 initial={{ y: 350 }}
                 animate={{ y: 0 }}
                 exit={{ y: 350 }}
                 transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-                className={`rounded-t-[32px] p-4 shadow-2xl flex flex-col h-[90%] max-h-[640px] overflow-hidden border-t ${
-                  theme === 'dark' ? 'bg-[#121212] border-stone-850' : 'bg-white border-neutral-200'
+                className={`rounded-t-[36px] p-5 shadow-2xl flex flex-col h-[90%] max-h-[640px] overflow-hidden border-t pointer-events-auto ${
+                  theme === 'dark' 
+                    ? 'bg-[#0b0e0b]/95 backdrop-blur-xl border-emerald-500/10 text-stone-100' 
+                    : 'bg-white/95 backdrop-blur-xl border-emerald-500/15 text-stone-900'
                 }`}
               >
                 {/* Header widget */}
-                <div className="flex items-center justify-between pb-3 border-b border-neutral-350/20">
+                <div className="flex items-center justify-between pb-3.5 border-b border-neutral-250/20">
                   <div className="flex items-center space-x-2.5">
                     <button 
                       onClick={() => setActiveChatListing(null)}
-                      className="p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-stone-900 transition-all text-neutral-400 hover:text-neutral-200"
+                      className="p-1.5 rounded-xl hover:bg-neutral-100 dark:hover:bg-white/5 transition-all text-neutral-400 hover:text-neutral-200 cursor-pointer"
                     >
                       <X className="w-5 h-5 pointer-events-auto" />
                     </button>
-                    <div>
-                      <h3 className="text-xs font-bold font-mono text-[#1A5319] dark:text-[#4E9F3D] uppercase tracking-wider flex items-center">
+                    <div className="text-left">
+                      <h3 className="text-[10px] font-extrabold font-mono text-[#1A5319] dark:text-[#4E9F3D] uppercase tracking-wider flex items-center">
                         <span className="w-2 h-2 rounded-full bg-emerald-500 mr-1.5 animate-pulse" />
                         {lang === 'en' ? 'AgroTrust Transparent Chat' : 'এগ্রোট্রাস্ট নিরাপদ চ্যাট'}
                       </h3>
-                      <p className="text-[11px] font-sans font-medium text-neutral-500 truncate max-w-[180px]">
+                      <p className="text-[11.5px] font-sans font-medium text-neutral-500 truncate max-w-[180px] mt-0.5">
                         {lang === 'en' ? activeChatListing.titleEn : activeChatListing.titleBn}
                       </p>
                     </div>
                   </div>
 
                   {/* Dynamic interactive sandboxed role-toggling tab */}
-                  <div className="flex bg-neutral-100 dark:bg-[#1a1a1a] rounded-lg p-0.5 border border-neutral-200/40 dark:border-stone-850">
+                  <div className="flex bg-neutral-100 dark:bg-white/5 rounded-xl p-0.5 border border-neutral-200/40 dark:border-white/5">
                     <button
                       type="button"
                       onClick={() => setSelectedChatRole('buyer')}
-                      className={`px-2.5 py-1 rounded text-[10px] font-bold font-sans transition-all pointer-events-auto ${
+                      className={`px-3 py-1.5 rounded-lg text-[10px] font-extrabold font-sans transition-all cursor-pointer pointer-events-auto ${
                         selectedChatRole === 'buyer' 
-                          ? 'bg-[#1A5319] text-white shadow-sm' 
-                          : 'text-neutral-450 hover:text-neutral-200'
+                          ? 'bg-emerald-600 text-white shadow-sm' 
+                          : 'text-neutral-500 hover:text-neutral-200'
                       }`}
                     >
                       {lang === 'en' ? 'Buyer 👤' : 'ক্রেতা'}
@@ -3636,10 +3656,10 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => setSelectedChatRole('seller')}
-                      className={`px-2.5 py-1 rounded text-[10px] font-bold font-sans transition-all pointer-events-auto ${
+                      className={`px-3 py-1.5 rounded-lg text-[10px] font-extrabold font-sans transition-all cursor-pointer pointer-events-auto ${
                         selectedChatRole === 'seller' 
-                          ? 'bg-[#1A5319] text-white shadow-sm' 
-                          : 'text-neutral-450 hover:text-neutral-200'
+                          ? 'bg-emerald-600 text-white shadow-sm' 
+                          : 'text-neutral-500 hover:text-neutral-200'
                       }`}
                     >
                       {lang === 'en' ? 'Seller 🌾' : 'বিক্রেতা'}
@@ -3648,8 +3668,8 @@ export default function App() {
                 </div>
 
                 {/* Sub-header instruction */}
-                <div className="flex items-center justify-between text-[9.5px] px-2 py-1.5 bg-yellow-500/10 border-b border-yellow-500/10 text-yellow-650 dark:text-yellow-405 font-mono">
-                  <span>
+                <div className="flex items-center justify-between text-[9.5px] px-2 py-2 bg-yellow-500/5 border-b border-yellow-500/10 text-yellow-600 dark:text-yellow-405 font-mono">
+                  <span className="text-left">
                     💬 {lang === 'en' ? 'Talking as ' : 'কথা বলছেন: '}
                     <strong>{selectedChatRole === 'buyer' ? (lang === 'en' ? 'Buyer (Rahman)' : 'ক্রেতা (রহমান)') : (lang === 'en' ? `Seller (${activeChatListing.sellerEn})` : `বিক্রেতা (${activeChatListing.sellerBn})`)}</strong>
                   </span>
@@ -3657,9 +3677,9 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => sendOrderFormFromSeller(activeChatListing.id)}
-                      className="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold flex items-center space-x-1 animate-pulse pointer-events-auto whitespace-nowrap"
+                      className="px-2.5 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold flex items-center space-x-1 animate-pulse pointer-events-auto whitespace-nowrap cursor-pointer"
                     >
-                      <Plus className="w-2.5 h-2.5" />
+                      <Plus className="w-3 h-3" />
                       <span>{lang === 'en' ? 'Send Order Form' : 'অর্ডার ফর্ম পাঠান'}</span>
                     </button>
                   )}
@@ -3678,31 +3698,31 @@ export default function App() {
                         }`}
                       >
                         {/* Name Indicator */}
-                        <span className="text-[9px] text-neutral-450 mb-0.5 font-bold px-1 uppercase tracking-tight">
+                        <span className="text-[9px] text-neutral-450 mb-1 font-bold px-1 uppercase tracking-tight font-mono">
                           {msg.sender === 'buyer' ? (lang === 'en' ? 'Buyer Rahman' : 'ক্রেতা রহমান') : (lang === 'en' ? msg.sender : 'বিক্রেতা')}
                         </span>
 
                         {/* Interactive conditional components based on type */}
                         {msg.type === 'text' && (
-                          <div className={`p-3 rounded-2xl text-[11.5px] leading-relaxed shadow-sm font-sans ${
+                          <div className={`p-3 rounded-2xl text-[11.5px] leading-relaxed shadow-sm font-sans text-left ${
                             isSelf 
-                              ? 'bg-[#1A5319] text-white rounded-tr-none' 
-                              : 'bg-neutral-100 dark:bg-stone-900 text-neutral-800 dark:text-neutral-100 rounded-tl-none border border-neutral-200/50 dark:border-stone-850'
+                              ? 'bg-gradient-to-tr from-emerald-600 to-emerald-500 text-white rounded-tr-none shadow-md shadow-emerald-950/15' 
+                              : 'bg-neutral-100/80 dark:bg-[#161a16] text-neutral-800 dark:text-neutral-100 rounded-tl-none border border-neutral-200/50 dark:border-white/5'
                           }`}>
                             <p>{msg.text}</p>
                           </div>
                         )}
 
                         {msg.type === 'voice' && (
-                          <div className={`p-2.5 rounded-2xl text-[11.5px] shadow-sm flex items-center space-x-2.5 ${
+                          <div className={`p-3 rounded-2xl text-[11.5px] shadow-sm flex items-center space-x-3 text-left ${
                             isSelf 
-                              ? 'bg-emerald-750 text-white rounded-tr-none' 
-                              : 'bg-neutral-100 dark:bg-stone-900 text-neutral-800 dark:text-neutral-100 rounded-tl-none border border-[#1A5319]/10'
+                              ? 'bg-gradient-to-tr from-emerald-600 to-emerald-500 text-white rounded-tr-none shadow-md shadow-emerald-950/15' 
+                              : 'bg-[#161a16] text-neutral-100 rounded-tl-none border border-emerald-500/10'
                           }`}>
                             <button
                               type="button"
                               onClick={() => msg.voiceUrl && playVoiceNote(msg.id, msg.voiceUrl)}
-                              className="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center hover:bg-emerald-600 active:scale-90 pointer-events-auto"
+                              className="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center hover:bg-emerald-600 active:scale-90 pointer-events-auto cursor-pointer"
                             >
                               {playingVoiceId === msg.id ? (
                                 <span className="flex space-x-0.5 items-center justify-center">
@@ -3715,7 +3735,7 @@ export default function App() {
                               )}
                             </button>
                             <div className="flex-1 min-w-[100px] text-left">
-                              <div className="flex items-center space-x-1">
+                              <div className="flex items-center space-x-1.5">
                                 {[...Array(8)].map((_, i) => (
                                   <span 
                                     key={i} 
@@ -3731,7 +3751,7 @@ export default function App() {
                                   />
                                 ))}
                               </div>
-                              <span className="text-[9px] block text-neutral-450 font-mono mt-0.5">
+                              <span className="text-[9px] block text-neutral-450 font-mono mt-1">
                                 {lang === 'en' ? `SpeakNote • ${msg.voiceDuration || 4}s` : `ভয়েস নোট • ${convertNumber(msg.voiceDuration || 4, lang)} সেকেন্ড`}
                               </span>
                             </div>
@@ -3750,26 +3770,26 @@ export default function App() {
                         )}
 
                         {msg.type === 'order_summary' && (
-                          <div className="w-full text-left my-1 p-3 bg-stone-900 border-2 border-emerald-500/40 rounded-2xl shadow-xl space-y-2">
-                            <div className="flex items-center justify-between border-b border-emerald-500/20 pb-1 text-[#4E9F3D]">
+                          <div className="w-full text-left my-1 p-3.5 bg-neutral-900 border border-emerald-500/30 rounded-2xl shadow-xl space-y-2.5">
+                            <div className="flex items-center justify-between border-b border-emerald-500/20 pb-1.5 text-[#4E9F3D]">
                               <span className="text-[10px] font-mono font-bold uppercase tracking-wider flex items-center">
                                 <Shield className="w-3.5 h-3.5 mr-1 text-emerald-450 animate-pulse" />
                                 AgroTrust Escrow Secured
                               </span>
-                              <span className="bg-emerald-800 text-white font-mono font-bold text-[8px] px-1.5 py-0.5 rounded">
+                              <span className="bg-emerald-800 text-white font-mono font-bold text-[8px] px-2 py-0.5 rounded-full">
                                 ESCROWED
                               </span>
                             </div>
-                            <div className="space-y-1.5 text-left text-neutral-300 font-sans">
-                              <p className="text-[11px] leading-snug">
+                            <div className="space-y-2 text-left text-neutral-300 font-sans">
+                              <p className="text-[11px] leading-relaxed">
                                 {lang === 'en' 
                                   ? `A high-security escrow transaction has been initialized. ${convertNumber(msg.orderFormData?.quantity || '100', 'en')} ${msg.orderFormData?.unit || 'KG'} of food grade biology weight locked.`
                                   : `নিরাপদ এসক্রো ডিপোজিট সফলভাবে সংরক্ষিত হয়েছে। খাদ্য নিরাপত্তার জন্য ${convertNumber(msg.orderFormData?.quantity || '100', 'bn')} ${msg.orderFormData?.unit || 'কেজি'} ফসল লক করা হয়েছে।`}
                               </p>
                               
-                              <div className="p-2 rounded bg-neutral-950 text-[10px] font-mono border border-neutral-850 grid grid-cols-2 gap-y-1 gap-x-2">
+                              <div className="p-2.5 rounded-xl bg-black/40 text-[10px] font-mono border border-white/5 grid grid-cols-2 gap-y-1.5 gap-x-2.5">
                                 <span className="text-neutral-450">{lang === 'en' ? 'Deposit volume' : 'ডিপোজিট ভলিউম'}:</span>
-                                <span className="text-right text-emerald-400 font-bold">{convertNumber(msg.orderFormData?.amount || '0', lang)} BDT</span>
+                                <span className="text-right text-emerald-450 font-extrabold">{convertNumber(msg.orderFormData?.amount || '0', lang)} BDT</span>
                                 
                                 <span className="text-neutral-450">{lang === 'en' ? 'Consignee Name' : 'ক্রেতা'}:</span>
                                 <span className="text-right truncate">{msg.orderFormData?.name}</span>
@@ -3778,7 +3798,7 @@ export default function App() {
                                 <span className="text-right truncate">{msg.orderFormData?.address}</span>
                               </div>
 
-                              <div className="flex space-x-1 mt-1">
+                              <div className="flex space-x-1 mt-1.5">
                                 <button
                                   type="button"
                                   onClick={() => {
@@ -3786,7 +3806,7 @@ export default function App() {
                                     setActiveCheckoutListing(activeChatListing);
                                     setCheckoutStep('success'); // proceed to tracking directly!
                                   }}
-                                  className="w-full bg-[#1A5319] hover:bg-emerald-800 font-bold text-white text-[9.5px] py-1 px-2 rounded-lg text-center transition-all cursor-pointer pointer-events-auto"
+                                  className="w-full bg-[#1A5319] hover:bg-emerald-800 font-bold text-white text-[10px] py-2 px-2.5 rounded-xl text-center transition-all cursor-pointer pointer-events-auto"
                                 >
                                   {lang === 'en' ? '⚡ Open Delivery & Transit Radar' : '⚡ লাইভ ডেলিভারি ও রুট রাডার ওয়ান করুন'}
                                 </button>
@@ -3796,7 +3816,7 @@ export default function App() {
                         )}
 
                         {/* Message Timestamp */}
-                        <span className="text-[8px] text-neutral-400 mt-1 block px-1">
+                        <span className="text-[8px] text-neutral-400 mt-1 block px-1 font-mono">
                           {msg.timestamp}
                         </span>
                       </div>
@@ -3805,9 +3825,9 @@ export default function App() {
                 </div>
 
                 {/* Chatbox keyboard/input footer with voice triggers */}
-                <div className="border-t border-neutral-250/20 pt-2 pb-1 bg-[#101010]/5 dark:bg-[#121212]/5">
+                <div className="border-t border-neutral-250/20 pt-2.5 pb-1 bg-[#101010]/5 dark:bg-white/5">
                   {isRecordingVoice ? (
-                    <div className="p-2 border border-red-500/20 bg-red-500/10 rounded-xl flex items-center justify-between">
+                    <div className="p-3 border border-red-500/20 bg-red-500/10 rounded-2xl flex items-center justify-between">
                       <div className="flex items-center space-x-2 text-red-500">
                         <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
                         <span className="text-xs font-mono font-bold">
@@ -3818,14 +3838,14 @@ export default function App() {
                         <button
                           type="button"
                           onClick={() => stopVoiceRecording(true)}
-                          className="px-2.5 py-1 text-[10px] uppercase font-bold text-neutral-400 hover:text-white pointer-events-auto"
+                          className="px-2.5 py-1 text-[10px] uppercase font-bold text-neutral-400 hover:text-white pointer-events-auto cursor-pointer"
                         >
                           {lang === 'en' ? 'Cancel' : 'বাতিল'}
                         </button>
                         <button
                           type="button"
                           onClick={() => stopVoiceRecording(false)}
-                          className="px-3 py-1 bg-red-600 hover:bg-red-500 text-white font-bold text-[10px] uppercase rounded-lg pointer-events-auto flex items-center space-x-1"
+                          className="px-3.5 py-1.5 bg-red-600 hover:bg-red-500 text-white font-bold text-[10px] uppercase rounded-xl pointer-events-auto flex items-center space-x-1.5 cursor-pointer"
                         >
                           <Square className="w-3 h-3 fill-current" />
                           <span>{lang === 'en' ? 'Stop & Send' : 'স্টপ ও সেন্ড'}</span>
@@ -3835,16 +3855,16 @@ export default function App() {
                   ) : (
                     <form 
                       onSubmit={sendChatMessage}
-                      className="flex items-center space-x-1.5"
+                      className="flex items-center space-x-2"
                     >
                       {/* Speech typing trigger */}
                       <button
                         type="button"
                         onClick={toggleSpeechRecognition}
-                        className={`p-2.5 rounded-xl border transition-all pointer-events-auto ${
+                        className={`p-3 rounded-2xl border transition-all pointer-events-auto cursor-pointer ${
                           isSpeechTranslating 
                             ? 'bg-purple-650 text-white border-purple-500 animate-pulse' 
-                            : 'bg-[#1A5319]/10 text-[#1A5319] dark:text-emerald-450 border-[#1A5319]/20 hover:bg-[#1A5319]/25'
+                            : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-450 border-emerald-500/15 hover:bg-emerald-500/20'
                         }`}
                         title={lang === 'en' ? "Voice Input Transcription" : "ভয়েস টু টেক্সট লিখন"}
                       >
@@ -3855,7 +3875,7 @@ export default function App() {
                       <button
                         type="button"
                         onClick={startVoiceRecording}
-                        className="p-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-xl border border-red-500/20 transition-all pointer-events-auto"
+                        className="p-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-2xl border border-red-500/20 transition-all pointer-events-auto cursor-pointer"
                         title={lang === 'en' ? "Record audio message" : "অডিও ভয়েস বার্তা রেকর্ড"}
                       >
                         <Volume2 className="w-4 h-4" />
@@ -3867,17 +3887,17 @@ export default function App() {
                         value={chatInputText}
                         onChange={(e) => setChatInputText(e.target.value)}
                         placeholder={lang === 'en' ? "Type transparent memo/price..." : "বার্তাদি বা আলোচনার মূল্য লিখুন..."}
-                        className="flex-1 bg-neutral-100 dark:bg-stone-900 text-neutral-800 dark:text-neutral-100 rounded-xl p-2.5 text-[11.5px] border border-neutral-200 dark:border-stone-850 outline-none focus:border-[#1A5319] pointer-events-auto font-sans"
+                        className="flex-1 bg-neutral-100 dark:bg-[#0A0A0A]/50 text-neutral-850 dark:text-stone-100 rounded-2xl p-3 text-xs border border-neutral-250 dark:border-white/5 outline-none focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50 pointer-events-auto font-sans transition-all"
                       />
 
                       {/* Send button */}
                       <button
                         type="submit"
                         disabled={!chatInputText.trim()}
-                        className={`p-2.5 rounded-xl text-white transition-all pointer-events-auto ${
+                        className={`p-3 rounded-2xl text-white transition-all pointer-events-auto cursor-pointer ${
                           chatInputText.trim() 
                             ? 'bg-emerald-600 hover:bg-emerald-700 shadow-sm active:scale-95' 
-                            : 'bg-neutral-300 dark:bg-stone-850 text-neutral-400 cursor-not-allowed'
+                            : 'bg-neutral-200 dark:bg-white/5 text-neutral-400 cursor-not-allowed'
                         }`}
                       >
                         <Send className="w-4 h-4 text-white" />
@@ -3887,16 +3907,15 @@ export default function App() {
                 </div>
 
                 {/* Secure Trust Stamp */}
-                <div className="flex justify-center items-center py-1 bg-emerald-500/5 mt-2 rounded border border-emerald-500/10">
-                  <span className="text-[8.5px] font-mono text-[#1A5319] dark:text-[#4E9F3D] flex items-center uppercase tracking-wider">
+                <div className="flex justify-center items-center py-1 bg-emerald-500/5 mt-2 rounded-xl border border-emerald-500/10">
+                  <span className="text-[8.5px] font-mono text-[#1A5319] dark:text-[#4E9F3D] flex items-center uppercase tracking-wider font-extrabold">
                     <Shield className="w-3 h-3 mr-1" />
                     {lang === 'en' ? 'Biosecure Escrow Sandbox (AgroTrust)' : 'বায়োসিকিউর এসক্রো সুরক্ষিত'}
                   </span>
                 </div>
               </motion.div>
             </motion.div>
-          )}
-        </AnimatePresence>
+          )}\n        </AnimatePresence>
 
 
         {/* CASHLESS MFS GATEWAY CHECKOUT HALF-SHEET DRAWER */}
@@ -3908,29 +3927,31 @@ export default function App() {
               exit={{ opacity: 0 }}
               className="absolute inset-0 bg-black/70 backdrop-blur-sm z-50 flex flex-col justify-end"
             >
-              <div className="flex-1" onClick={() => setActiveCheckoutListing(null)} />
+              <div className="flex-1 pointer-events-auto" onClick={() => setActiveCheckoutListing(null)} />
               
               <motion.div
                 initial={{ y: 400 }}
                 animate={{ y: 0 }}
                 exit={{ y: 400 }}
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                className={`rounded-t-[32px] p-5 shadow-2xl flex flex-col space-y-4 max-h-[90%] overflow-y-auto ${
-                  theme === 'dark' ? 'bg-[#0E0E0E] text-[#E0E0E0] border-t border-stone-850' : 'bg-white text-[#212121] border-t border-emerald-100'
+                className={`rounded-t-[36px] p-5 shadow-2xl flex flex-col space-y-4 max-h-[92%] overflow-y-auto pointer-events-auto border-t ${
+                  theme === 'dark' 
+                    ? 'bg-[#0B0D0B]/95 backdrop-blur-xl text-[#E0E5DF] border-emerald-500/10 shadow-[0_-12px_40px_rgba(0,0,0,0.8)]' 
+                    : 'bg-white/95 backdrop-blur-xl text-[#212121] border-emerald-500/15 shadow-[0_-12px_32px_rgba(26,83,25,0.06)]'
                 }`}
               >
                 {/* Header title */}
-                <div className="flex items-center justify-between pb-2 border-b border-neutral-200 dark:border-stone-800">
+                <div className="flex items-center justify-between pb-2.5 border-b border-neutral-200 dark:border-white/5">
                   <div className="flex items-center space-x-1.5">
                     <Shield className="w-5 h-5 text-emerald-500 animate-pulse" />
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#1A5319] dark:text-[#4E9F3D]">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#1A5319] dark:text-[#4E9F3D] font-display">
                       {t.checkoutHeader}
                     </h3>
                   </div>
                   <button 
                     id="btn-checkout-close"
                     onClick={() => setActiveCheckoutListing(null)}
-                    className="p-1 rounded-full text-neutral-400 hover:bg-neutral-100 dark:hover:bg-stone-900"
+                    className="p-1 rounded-full text-neutral-400 hover:bg-neutral-100 dark:hover:bg-white/5 cursor-pointer"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -3940,18 +3961,18 @@ export default function App() {
                   <div className="space-y-4">
                     
                     {/* Consignment summary card detail */}
-                    <div className="bg-emerald-50/50 dark:bg-stone-900/50 p-3 rounded-xl border border-emerald-500/10 flex items-center space-x-3 text-xs">
+                    <div className="bg-emerald-50/50 dark:bg-white/5 p-3 rounded-2xl border border-emerald-500/10 flex items-center space-x-3 text-xs text-left">
                       <img 
                         src={activeCheckoutListing.imageUrl} 
                         referrerPolicy="no-referrer"
                         alt={activeCheckoutListing.titleEn} 
-                        className="w-12 h-12 rounded-lg object-cover"
+                        className="w-12 h-12 rounded-xl object-cover"
                       />
                       <div className="min-w-0 flex-1">
-                        <p className="font-bold text-neutral-800 dark:text-neutral-100 truncate">
+                        <p className="font-extrabold text-neutral-805 dark:text-neutral-100 truncate">
                           {lang === 'en' ? activeCheckoutListing.titleEn : activeCheckoutListing.titleBn}
                         </p>
-                        <p className="text-[10px] text-[#1A5319] dark:text-[#4E9F3D] font-mono mt-0.5">
+                        <p className="text-[10px] text-[#1A5319] dark:text-[#4E9F3D] font-mono mt-0.5 font-bold">
                           {t.verifiedSeller}: {lang === 'en' ? activeCheckoutListing.sellerEn : activeCheckoutListing.sellerBn}
                         </p>
                         <p className="text-[9px] text-neutral-400 mt-0.5">
@@ -3959,7 +3980,7 @@ export default function App() {
                         </p>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <p className="text-xs font-mono font-bold text-amber-500">
+                        <p className="text-xs font-mono font-extrabold text-amber-500">
                           {lang === 'en' ? `${activeCheckoutListing.pricePerUnitEn}/${activeCheckoutListing.unitEn}` : `${activeCheckoutListing.pricePerUnitBn}/${activeCheckoutListing.unitBn}`}
                         </p>
                       </div>
@@ -3967,21 +3988,21 @@ export default function App() {
 
                     {/* SELECT SECURE GATEWEAY PROVIDER */}
                     <div className="space-y-2">
-                      <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest">{t.selectWallet}</p>
+                      <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest text-left">{t.selectWallet}</p>
                       
-                      <div className="space-y-2 font-mono">
+                      <div className="space-y-2.5 font-mono">
                         {/* bKash selector */}
                         <div 
                           id="btn-checkout-provider-bkash"
                           onClick={() => setSelectedMFS('bkash')}
-                          className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${
+                          className={`flex items-center justify-between p-3.5 rounded-2xl border cursor-pointer transition-all duration-300 ${
                             selectedMFS === 'bkash'
-                              ? 'border-pink-500 bg-pink-50/10 dark:bg-pink-950/10'
-                              : 'border-emerald-500/10 bg-neutral-50 dark:bg-stone-900 hover:border-pink-500/30'
+                              ? 'border-pink-500 bg-pink-500/10 dark:bg-pink-950/10 shadow-[0_4px_16px_rgba(236,72,153,0.15)] scale-102'
+                              : 'border-emerald-500/10 bg-neutral-100/35 dark:bg-white/5 hover:border-pink-500/35'
                           }`}
                         >
                           <div className="flex items-center space-x-2.5">
-                            <div className="w-6 h-6 rounded-md bg-pink-500 flex items-center justify-center text-white font-black text-xs font-sans">
+                            <div className="w-6 h-6 rounded-lg bg-pink-500 flex items-center justify-center text-white font-black text-xs font-sans">
                               b
                             </div>
                             <span className="text-xs font-bold">{t.bkashLabel}</span>
@@ -3995,14 +4016,14 @@ export default function App() {
                         <div 
                           id="btn-checkout-provider-nagad"
                           onClick={() => setSelectedMFS('nagad')}
-                          className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${
+                          className={`flex items-center justify-between p-3.5 rounded-2xl border cursor-pointer transition-all duration-300 ${
                             selectedMFS === 'nagad'
-                              ? 'border-orange-500 bg-orange-50/10 dark:bg-orange-950/10'
-                              : 'border-emerald-500/10 bg-neutral-50 dark:bg-stone-900 hover:border-orange-500/30'
+                              ? 'border-orange-500 bg-orange-500/10 dark:bg-orange-950/10 shadow-[0_4px_16px_rgba(249,115,22,0.15)] scale-102'
+                              : 'border-emerald-500/10 bg-neutral-100/35 dark:bg-white/5 hover:border-orange-500/35'
                           }`}
                         >
                           <div className="flex items-center space-x-2.5">
-                            <div className="w-6 h-6 rounded-md bg-orange-500 flex items-center justify-center text-white font-bold text-xs font-sans">
+                            <div className="w-6 h-6 rounded-lg bg-orange-500 flex items-center justify-center text-white font-bold text-xs font-sans">
                               N
                             </div>
                             <span className="text-xs font-bold">{t.nagadLabel}</span>
@@ -4016,14 +4037,14 @@ export default function App() {
                         <div 
                           id="btn-checkout-provider-bank"
                           onClick={() => setSelectedMFS('bank')}
-                          className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${
+                          className={`flex items-center justify-between p-3.5 rounded-2xl border cursor-pointer transition-all duration-300 ${
                             selectedMFS === 'bank'
-                              ? 'border-indigo-500 bg-indigo-50/10 dark:bg-indigo-950/10'
-                              : 'border-emerald-500/10 bg-neutral-50 dark:bg-stone-900 hover:border-indigo-500/30'
+                              ? 'border-indigo-500 bg-indigo-500/10 dark:bg-indigo-950/10 shadow-[0_4px_16px_rgba(99,102,241,0.15)] scale-102'
+                              : 'border-emerald-500/10 bg-neutral-100/35 dark:bg-white/5 hover:border-indigo-500/35'
                           }`}
                         >
                           <div className="flex items-center space-x-2.5">
-                            <div className="w-6 h-6 rounded-md bg-indigo-600 flex items-center justify-center text-white text-xs">
+                            <div className="w-6 h-6 rounded-lg bg-indigo-600 flex items-center justify-center text-white text-xs">
                               <Building className="w-3.5 h-3.5" />
                             </div>
                             <span className="text-xs font-bold">{t.bankLabel}</span>
@@ -4039,7 +4060,7 @@ export default function App() {
                       <button
                         id="btn-checkout-next"
                         onClick={() => setCheckoutStep('payment_form')}
-                        className="w-full bg-[#1A5319] hover:bg-emerald-800 dark:bg-[#4E9F3D] dark:hover:bg-emerald-600 text-white font-bold py-3 rounded-xl text-xs tracking-wider transition-all flex items-center justify-center space-x-2"
+                        className="w-full bg-gradient-to-tr from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white font-extrabold py-3.5 rounded-2xl text-xs tracking-wider transition-all flex items-center justify-center space-x-2 cursor-pointer shadow-md duration-200"
                       >
                         <span>{lang === 'en' ? `Proceed with ${selectedMFS.toUpperCase()}` : `${selectedMFS.toUpperCase()} দিয়ে অগ্রসর হন`}</span>
                         <ArrowRight className="w-4 h-4" />
@@ -4053,28 +4074,28 @@ export default function App() {
                   <form id="form-checkout-mfs" onSubmit={handleConfirmEscrowSubmit} className="space-y-4 font-mono text-xs">
                     
                     {/* Security credentials entry for bKash/Nagad */}
-                    <div className="p-3 bg-neutral-50 dark:bg-stone-900 rounded-xl border border-emerald-500/10 space-y-3">
-                      <div className="flex items-center space-x-2 pb-2 border-b border-neutral-150 dark:border-stone-800">
+                    <div className="p-3.5 bg-neutral-100/50 dark:bg-[#070907]/50 rounded-2xl border border-emerald-500/15 space-y-3.5">
+                      <div className="flex items-center space-x-2 pb-2.5 border-b border-neutral-200 dark:border-white/5 text-left">
                         <Lock className="w-4 h-4 text-emerald-500" />
-                        <span className="font-bold text-[10px] text-neutral-400 uppercase tracking-wider">
+                        <span className="font-extrabold text-[10px] text-neutral-400 uppercase tracking-wider">
                           {selectedMFS.toUpperCase()} SECURE GATEWAY CHECKOUT
                         </span>
                       </div>
 
-                      <div>
-                        <label className="block text-[10px] text-neutral-400 mb-1">{t.enterWalletPhone}</label>
+                      <div className="text-left">
+                        <label className="block text-[10px] font-bold text-neutral-400 mb-1.5">{t.enterWalletPhone}</label>
                         <input 
                           id="input-mfs-phone"
                           type="text" 
                           required
                           value={mfsPhone}
                           onChange={(e) => setMfsPhone(e.target.value.replace(/\D/g, '').slice(0, 11))}
-                          className="w-full px-3 py-2 text-xs rounded-lg border border-emerald-500/20 bg-stone-100 dark:bg-[#0A0A0A] outline-none focus:ring-2 focus:ring-emerald-500/30"
+                          className="w-full px-3.5 py-3 text-xs rounded-xl border border-neutral-250 dark:border-white/5 bg-neutral-100/35 dark:bg-[#0a0f0a] outline-none focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all text-neutral-850 dark:text-stone-100"
                         />
                       </div>
 
-                      <div>
-                        <label className="block text-[10px] text-neutral-400 mb-1">{t.enterPin}</label>
+                      <div className="text-left">
+                        <label className="block text-[10px] font-bold text-neutral-400 mb-1.5">{t.enterPin}</label>
                         <input 
                           id="input-mfs-pin"
                           type="password" 
@@ -4083,13 +4104,13 @@ export default function App() {
                           value={mfsPin}
                           onChange={(e) => setMfsPin(e.target.value.replace(/\D/g, '').slice(0, 5))}
                           placeholder="••••"
-                          className="w-full px-3 py-2 text-xs rounded-lg border border-emerald-500/20 bg-stone-100 dark:bg-[#0A0A0A] outline-none tracking-widest focus:ring-2 focus:ring-emerald-500/30"
+                          className="w-full px-3.5 py-3 text-xs rounded-xl border border-neutral-250 dark:border-white/5 bg-neutral-100/35 dark:bg-[#0a0f0a] outline-none tracking-widest focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all text-neutral-855 dark:text-stone-100"
                         />
                       </div>
                     </div>
 
-                    <div className="bg-yellow-500/10 border border-yellow-500/20 p-2.5 rounded-xl flex items-start space-x-2 text-[10px] text-yellow-600 dark:text-yellow-400">
-                      <AlertCircle className="w-4 h-4 text-yellow-500 flex-shrink-0" />
+                    <div className="bg-yellow-500/5 border border-yellow-500/25 p-3.5 rounded-2xl flex items-start space-x-2 text-[10px] text-yellow-600 dark:text-yellow-405 leading-relaxed font-sans text-left">
+                      <AlertCircle className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5" />
                       <p className="leading-snug">
                         {lang === 'en' ? 'AGROTRUST ESCROW GUARANTEE: Money stays in verified escrow state until the shipping vehicle is unloaded and verified at goal destination.' 
                                       : 'এগ্রোট্রাস্ট এসক্রো সুরক্ষানীতি: পণ্য ক্রান্তিসীমা পার হয়ে গন্তব্য পৌঁছানোর পূর্বে অর্থ এসক্রো হোল্ডে থাকবে।'}
@@ -4100,8 +4121,8 @@ export default function App() {
                       id="btn-escrow-submit"
                       type="submit"
                       disabled={paymentLoading}
-                      className={`w-full text-white font-bold py-3.5 rounded-xl text-xs transition-all flex items-center justify-center space-x-2 ${
-                        selectedMFS === 'bkash' ? 'bg-pink-600 hover:bg-pink-700' : selectedMFS === 'nagad' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-indigo-600 hover:bg-indigo-750'
+                      className={`w-full text-white font-extrabold py-3.5 rounded-2xl text-xs transition-all flex items-center justify-center space-x-2 cursor-pointer shadow-md duration-200 ${
+                        selectedMFS === 'bkash' ? 'bg-pink-600 hover:bg-pink-700' : selectedMFS === 'nagad' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-indigo-650 hover:bg-indigo-700'
                       }`}
                     >
                       {paymentLoading ? (
@@ -4123,39 +4144,39 @@ export default function App() {
                 )}
 
                 {checkoutStep === 'success' && (
-                  <div className="space-y-4 text-xs font-mono">
+                  <div className="space-y-4 text-xs font-mono text-left">
                     
                     {/* SUCCESS ESCROW CONFIRMATION */}
-                    <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center space-y-2">
-                      <div className="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center mx-auto mb-1">
+                    <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center space-y-2.5">
+                      <div className="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center mx-auto mb-1 shadow-sm">
                         <Check className="w-6 h-6" />
                       </div>
-                      <h4 className="font-bold text-[#1A5319] dark:text-[#4E9F3D] text-sm tracking-tight">{t.escrowHeld}</h4>
-                      <p className="text-[10px] text-neutral-400">{t.trxSuccess}</p>
-                      <div className="bg-black/40 py-1.5 px-3 rounded-lg w-max mx-auto border border-emerald-500/10 mt-1">
-                        <span className="text-[11px] text-emerald-400 font-bold">TrxID: {trxId}</span>
+                      <h4 className="font-extrabold text-[#1A5319] dark:text-[#4E9F3D] text-sm tracking-tight">{t.escrowHeld}</h4>
+                      <p className="text-[10px] text-neutral-400 leading-normal">{t.trxSuccess}</p>
+                      <div className="bg-black/40 py-1.5 px-3.5 rounded-xl w-max mx-auto border border-white/5 mt-1.5">
+                        <span className="text-[11px] text-emerald-450 font-bold">TrxID: {trxId}</span>
                       </div>
                     </div>
 
                     {/* INTERACTIVE SHIPPMENT MAP TRACKER */}
-                    <div className="p-3.5 rounded-xl bg-neutral-50 dark:bg-stone-900 border border-emerald-500/10 space-y-3">
-                      <h4 className="text-[10.5px] font-bold text-[#1A5319] dark:text-[#4E9F3D] uppercase tracking-wider flex items-center">
-                        <Map className="w-4 h-4 mr-1 text-emerald-500 animate-pulse" />
+                    <div className="p-3.5 rounded-2xl bg-neutral-100/35 dark:bg-white/5 border border-emerald-500/10 space-y-3">
+                      <h4 className="text-[10.5px] font-extrabold text-[#1A5319] dark:text-[#4E9F3D] uppercase tracking-wider flex items-center">
+                        <Map className="w-4 h-4 mr-1.5 text-emerald-500 animate-pulse" />
                         {t.mapTrackingHeader}
                       </h4>
 
                       {/* Map canvas track */}
-                      <div className="h-16 relative bg-neutral-200 dark:bg-stone-950 border border-emerald-500/5 rounded-lg overflow-hidden flex items-center px-4">
+                      <div className="h-20 relative bg-neutral-100/55 dark:bg-[#040504] border border-emerald-500/10 rounded-2xl overflow-hidden flex items-center px-4">
                         <div className="absolute inset-0 bg-grid-slate-500 [mask-image:linear-gradient(0deg,#fff,rgba(255,255,255,0.6))]" />
                         
                         {/* Map track route line */}
-                        <div className="w-full h-1 bg-stone-300 dark:bg-stone-800 rounded relative">
+                        <div className="w-full h-1.5 bg-stone-300 dark:bg-stone-800 rounded relative">
                           <div 
                             className="h-full bg-emerald-500 transition-all duration-300 relative"
                             style={{ width: `${transitPercent}%` }}
                           >
                             {/* Moving Truck Node */}
-                            <div className="absolute top-1/2 right-0 -translate-y-1/2 w-6 h-6 rounded-full bg-stone-900 text-white flex items-center justify-center text-[10px] border border-emerald-400 shadow-md transform translate-x-3 transition-transform">
+                            <div className="absolute top-1/2 right-0 -translate-y-1/2 w-7 h-7 rounded-full bg-stone-900 text-white flex items-center justify-center text-xs border border-emerald-400 shadow-md transform translate-x-3.5 transition-transform animate-bounce">
                               🚚
                             </div>
                           </div>
@@ -4181,25 +4202,27 @@ export default function App() {
                       </div>
 
                       {/* Moving parcel telemetry status readout */}
-                      <div className="bg-stone-100 dark:bg-[#0A0A0A] p-2.5 rounded-lg border border-neutral-200/50 dark:border-neutral-900">
-                        <p className="text-[10px] text-neutral-400">{t.deliveryVehicle}</p>
+                      <div className="bg-neutral-100/35 dark:bg-white/5 p-3 rounded-2xl border border-neutral-200/50 dark:border-white/5 font-sans space-y-1">
+                        <p className="text-[10px] text-neutral-450 font-bold uppercase tracking-wider">{t.deliveryVehicle}</p>
                         
-                        <p className="font-bold text-neutral-800 dark:text-stone-200 text-xs mt-0.5">
+                        <p className="font-extrabold text-neutral-805 dark:text-stone-250 text-xs mt-0.5 leading-snug">
                           {transitPercent === 0 ? 'Connecting vehicle...' : 
                            transitPercent === 100 ? (lang === 'bn' ? 'চালান গন্তব্যে পৌঁছেছে!' : 'Consignment safely arrived!') :
                            (lang === 'bn' ? `যাত্রাপথে রয়েছে (${convertNumber(transitPercent, lang)}%)` : `Vehicle in transit (${transitPercent}%)`)}
                         </p>
                         
-                        <p className="text-[9px] text-[#212121]/50 dark:text-stone-400 leading-tight mt-1 flex items-center space-x-1">
+                        <p className="text-[9px] text-[#212121]/50 dark:text-stone-400 leading-relaxed mt-1 flex items-center space-x-1.5">
                           <span className="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse" />
                           <span>{t.transitProgress}</span>
                         </p>
                       </div>
 
-                      <div className="flex justify-between items-center text-[9px] text-neutral-400">
+                      <div className="flex justify-between items-center text-[9.5px] text-neutral-400">
                         <span>Escrow State:</span>
-                        <span className={`font-bold px-1.5 py-0.5 rounded ${
-                          escrowStatus === 'RELEASED' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-yellow-500/10 text-yellow-500'
+                        <span className={`font-bold px-2.5 py-0.5 rounded-full text-[9px] uppercase tracking-wide border ${
+                          escrowStatus === 'RELEASED' 
+                            ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-600 dark:text-emerald-455' 
+                            : 'bg-yellow-500/10 border-yellow-500/25 text-yellow-650 dark:text-yellow-405'
                         }`}>
                           {escrowStatus}
                         </span>
@@ -4209,7 +4232,7 @@ export default function App() {
                     <button
                       id="btn-delivery-minimize"
                       onClick={() => setActiveCheckoutListing(null)}
-                      className="w-full bg-[#1A5319] hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs transition-all flex items-center justify-center space-x-1"
+                      className="w-full bg-[#1A5319] hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white font-extrabold py-3.5 rounded-2xl text-xs transition-all flex items-center justify-center space-x-1 cursor-pointer shadow-md duration-200"
                     >
                       <CheckCircle className="w-4 h-4 text-emerald-300" />
                       <span>{t.closeDrawer}</span>
@@ -4220,8 +4243,7 @@ export default function App() {
 
               </motion.div>
             </motion.div>
-          )}
-        </AnimatePresence>
+          )}\n        </AnimatePresence>
 
 
         {/* DETAILED SAAO REGIONAL SUPPORT DIALOG BOX */}
