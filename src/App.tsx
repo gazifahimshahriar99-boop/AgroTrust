@@ -10,6 +10,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { Language, Theme, Portal, ActiveScreen, VerificationStatus, ReelListing, Comment, EscrowStatus, ChatMessage, BuyerSellerChat } from './types';
 import { REEL_LISTINGS, MOCK_SAAO, TRANSLATIONS, formatCurrency, convertNumber, CATEGORIES_STRUCTURE } from './data';
+import { signInWithGoogle } from './firebase';
 
 interface ChatOrderFormProps {
   msg: ChatMessage;
@@ -197,6 +198,7 @@ export default function App() {
   const [dob, setDob] = useState('');
   const [verifyingDetails, setVerifyingDetails] = useState(false);
   const [registeredName, setRegisteredName] = useState('M. Rahman');
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   // Profile Picture management states
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
@@ -709,6 +711,65 @@ export default function App() {
   const [currentReelIndex, setCurrentReelIndex] = useState(0);
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [listings, setListings] = useState<ReelListing[]>(REEL_LISTINGS);
+  const [activeCommentsListing, setActiveCommentsListing] = useState<ReelListing | null>(null);
+  
+  // Interactive Bidding System States
+  const [bidsRegistry, setBidsRegistry] = useState<Record<string, any[]>>({
+    'reel_1': [
+      {
+        id: 'bid_init_1',
+        bidPrice: 42,
+        quantity: 500,
+        bidderName: 'Dhaka Agro Foods Ltd',
+        timestamp: '10m ago',
+        status: 'countered',
+        messageEn: 'Will pick up in our own cooling truck',
+        messageBn: 'আমাদের নিজস্ব কুলিং ট্রাকে নিয়ে আসব।'
+      },
+      {
+        id: 'bid_init_2',
+        bidPrice: 44,
+        quantity: 1200,
+        bidderName: 'Islam Bazaar',
+        timestamp: '5m ago',
+        status: 'pending',
+        messageEn: 'Need immediate morning delivery',
+        messageBn: 'জরুরি সকালের ডেলিভারি প্রয়োজন।'
+      }
+    ],
+    'reel_2': [
+      {
+        id: 'bid_init_3',
+        bidPrice: 2950,
+        quantity: 15,
+        bidderName: 'Savar Fruit Wholesalers',
+        timestamp: '2h ago',
+        status: 'pending',
+        messageEn: 'Request food-grade wooden crates packaging',
+        messageBn: 'ফুড-গ্রেড কাঠের ক্রেটে প্যাকেজিং অনুরোধ করছি।'
+      }
+    ],
+    'reel_3': [
+      {
+        id: 'bid_init_4',
+        bidPrice: 18000,
+        quantity: 20,
+        bidderName: 'Nuts & Seeds Corp Dhaka',
+        timestamp: '4h ago',
+        status: 'accepted',
+        messageEn: 'Bank collateral guarantee attached',
+        messageBn: 'ব্যাংক লিয়েন গ্যারান্টি সংযুক্ত।'
+      }
+    ]
+  });
+
+  const [biddingListing, setBiddingListing] = useState<ReelListing | null>(null);
+  const [bidPriceInput, setBidPriceInput] = useState<string>('');
+  const [bidQuantityInput, setBidQuantityInput] = useState<string>('');
+  const [bidNotesInput, setBidNotesInput] = useState<string>('');
+  const [biddingLoading, setBiddingLoading] = useState<boolean>(false);
+  const [playingVideos, setPlayingVideos] = useState<Record<string, boolean>>({});
+
   const [showCommentsDrawer, setShowCommentsDrawer] = useState(false);
   const [newCommentText, setNewCommentText] = useState('');
   const [likesCount, setLikesCount] = useState<{ [key: string]: number }>({
@@ -850,6 +911,116 @@ export default function App() {
     }, 1800);
   };
 
+  // Handle Google Authentication Protocol
+  const handleGoogleAuth = async () => {
+    setGoogleLoading(true);
+    try {
+      const user = await signInWithGoogle();
+      setRegisteredName(user.displayName);
+      setProfilePhoto(user.photoURL);
+      setVerificationStatus('verified');
+      setActiveScreen('dashboard');
+      showToast(lang === 'bn' 
+        ? `গুগল সাইন-ইন সফল: স্বাগতম ${user.displayName}!` 
+        : `Google sign-in successful: Welcome, ${user.displayName}!`);
+    } catch (error) {
+      console.error(error);
+      showToast(lang === 'bn' 
+        ? 'গুগল সাইন-ইন ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।' 
+        : 'Google sign-in cancelled or failed.');
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
+  // Place Bid Form Submit Action
+  const handlePlaceBid = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!biddingListing) return;
+    
+    const targetPrice = parseFloat(bidPriceInput || '0');
+    const targetQty = parseFloat(bidQuantityInput || '100') || 100;
+    if (isNaN(targetPrice) || targetPrice <= 0) {
+      showToast(lang === 'en' ? 'Please enter a valid bid price' : 'অনুগ্রহ করে সঠিক দাম লিখুন');
+      return;
+    }
+
+    setBiddingLoading(true);
+    
+    setTimeout(() => {
+      const newBid = {
+        id: 'bid_' + Date.now(),
+        bidPrice: targetPrice,
+        quantity: targetQty,
+        bidderName: registeredName || 'M. Rahman (You)',
+        timestamp: 'Just now',
+        status: 'pending',
+        messageEn: bidNotesInput.trim() || 'Committed transaction with AgroTrust escrow protection.',
+        messageBn: bidNotesInput.trim() || 'নিরাপদ এগ্রোট্রাস্ট এসক্রো সুরক্ষায় চুক্তি সম্পন্ন করতে চাচ্ছি।'
+      };
+
+      setBidsRegistry(prev => ({
+        ...prev,
+        [biddingListing.id]: [...(prev[biddingListing.id] || []), newBid]
+      }));
+
+      const basePrice = parseFloat(biddingListing.pricePerUnitEn.replace(/[^0-9]/g, '')) || 50;
+      const suffix = biddingListing.unitEn || 'unit';
+
+      setBiddingLoading(false);
+      setBiddingListing(null);
+      showToast(lang === 'en' ? `Bid of ${targetPrice} BDT / ${suffix} submitted successfully to blockchain ledger!` : `${targetPrice} টাকার দরপ্রস্তাব সফলভাবে রেজিস্ট্রি খাতায় জমা হয়েছে!`);
+
+      // Spawn farmer auto reply in chat after 2.5 seconds
+      setTimeout(() => {
+        setChatsRegistry(prev => {
+          const currentChat = prev[biddingListing.id] || {
+            listingId: biddingListing.id,
+            buyerName: registeredName || 'M. Rahman',
+            sellerName: biddingListing.sellerEn,
+            messages: []
+          };
+          
+          let responseTextEn = '';
+          let responseTextBn = '';
+
+          if (targetPrice >= basePrice) {
+            responseTextEn = `I saw your premium bid of BDT ${targetPrice} for my ${biddingListing.titleEn}. Great offer! I accept the bid. Let's lock this closing agreement now. I am sending you the transaction form.`;
+            responseTextBn = `আপনার প্রিমিয়াম বিড ${targetPrice} টাকা পেয়েছি। চমৎকার দরপ্রস্তাব! আমি এটি গ্রহণ করেছি। চুক্তি চূড়ান্ত করতে আমি লেনদেন ফর্ম পাঠাচ্ছি।`;
+            
+            // Auto dispatch escrow order form to secure the deal
+            setTimeout(() => {
+              sendOrderFormFromSeller(biddingListing.id);
+            }, 3000);
+          } else {
+            responseTextEn = `Thank you for your bidding offer of BDT ${targetPrice} for ${biddingListing.titleEn}. The base price listed is BDT ${basePrice}. Can we meet in negotiation halfway at BDT ${Math.round((basePrice + targetPrice) / 2)} instead? This would cover fertilizer premium costs.`;
+            responseTextBn = `আপনার বিড ${targetPrice} টাকা পেয়েছি। আমার ভিত্তি মূল্য হলো ${basePrice} টাকা। আমরা কি মাঝামাঝি একটি মূল্য ${Math.round((basePrice + targetPrice) / 2)} টাকায় চুক্তি চূড়ান্ত করতে পারি? এটি আমাদের সার ও রক্ষণাবেক্ষণ খরচ মেটাতে সাহায্য করবে।`;
+          }
+
+          const replyId = `bid-auto-${Date.now()}`;
+          const newMsg: ChatMessage = {
+            id: replyId,
+            sender: 'seller',
+            type: 'text',
+            text: lang === 'en' ? responseTextEn : responseTextBn,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          };
+
+          return {
+            ...prev,
+            [biddingListing.id]: {
+              ...currentChat,
+              messages: [...currentChat.messages, newMsg]
+            }
+          };
+        });
+
+        showToast(lang === 'en' ? `Farmer ${biddingListing.sellerEn} responded to your bid in Chat!` : `কৃষক ${biddingListing.sellerBn} আপনার দরপ্রস্তাবের উত্তর চ্যাটে পাঠিয়েছেন!`);
+      }, 3000);
+
+    }, 2000);
+  };
+
   // Toggle upvote/like
   const handleLikeReel = (reelId: string) => {
     const alreadyLiked = userLiked[reelId];
@@ -868,7 +1039,7 @@ export default function App() {
     e.preventDefault();
     if (!newCommentText.trim()) return;
 
-    const currentReel = listings[currentReelIndex];
+    const currentReel = activeCommentsListing || listings[currentReelIndex % listings.length];
     const newComment: Comment = {
       id: 'nc_' + Date.now(),
       userEn: 'M. Rahman (You)',
@@ -1534,6 +1705,42 @@ export default function App() {
                     )}
                   </AnimatePresence>
 
+                  {/* Google Authenticator Section */}
+                  <div className="pt-2">
+                    <button
+                      id="btn-google-signin"
+                      type="button"
+                      disabled={googleLoading}
+                      onClick={handleGoogleAuth}
+                      className="w-full bg-white dark:bg-[#1C1C1E] text-neutral-800 dark:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-stone-900 border border-neutral-250 dark:border-stone-800 font-bold py-2.5 rounded-xl text-xs tracking-wide transition-all duration-300 flex items-center justify-center space-x-2 shadow-sm active:scale-98 cursor-pointer relative"
+                    >
+                      {googleLoading ? (
+                        <>
+                          <svg className="animate-spin h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                          </svg>
+                          <span>{lang === 'en' ? 'Authenticating with Google...' : 'গুগল যাচাই করা হচ্ছে...'}</span>
+                        </>
+                      ) : (
+                        <>
+                          {/* Elegant brand colored custom letters */}
+                          <div className="flex items-center justify-center space-x-0.5 select-none font-sans font-black tracking-normal text-[11px] leading-none">
+                            <span className="text-[#4285F4]">G</span>
+                            <span className="text-[#EA4335]">o</span>
+                            <span className="text-[#FBBC05]">o</span>
+                            <span className="text-[#4285F4]">g</span>
+                            <span className="text-[#34A853]">l</span>
+                            <span className="text-[#EA4335]">e</span>
+                          </div>
+                          <span className="text-neutral-700 dark:text-stone-300 font-semibold">
+                            {lang === 'en' ? 'Continue with Google' : 'গুগল অ্যাকাউন্ট দিয়ে লগইন করুন'}
+                          </span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+
                   {/* iOS glass like direct seller login trigger */}
                   <div className="relative flex items-center justify-center my-4">
                     <div className="absolute inset-0 flex items-center">
@@ -1646,187 +1853,297 @@ export default function App() {
                   ))}
                 </div>
 
-                {/* SECTOR VERTICAL REEL SLIDES COMPONENT (TikTok / Instagram Reels Clone) */}
-                <div id="agro-reels-container" className="flex-1 bg-black relative flex items-center justify-center overflow-hidden h-[450px]">
+                {/* INTERACTIVE PRODUCT FEED COMPONENT */}
+                <div id="agro-products-feed" className="flex-1 bg-[#F4F6F4] dark:bg-[#0C0C0C] overflow-y-auto px-3 py-3 space-y-4 min-h-0 relative select-none">
                   
                   {filteredListings.length > 0 ? (
-                    (() => {
-                      const activeItem = filteredListings[currentReelIndex % filteredListings.length];
+                    filteredListings.map((item, index) => {
+                      const isPlaying = !!playingVideos[item.id];
+                      const activeBids = bidsRegistry[item.id] || [];
+                      const likesCountVal = likesCount[item.id] || item.likes;
+                      const hasLiked = !!userLiked[item.id];
+
+                      // Define dynamic transport velocity zone colors
+                      let zoneBadgeColor = 'bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400';
+                      if (item.zoneEn === 'Buffer') {
+                        zoneBadgeColor = 'bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400';
+                      } else if (item.zoneEn === 'Vault') {
+                        zoneBadgeColor = 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400';
+                      }
+
                       return (
-                        <div className="absolute inset-0 w-full h-full flex flex-col justify-end transition-all duration-500">
-                          
-                          {/* Image Background representing the reel item content */}
-                          <img 
-                            src={activeItem.imageUrl} 
-                            referrerPolicy="no-referrer"
-                            alt={activeItem.titleEn} 
-                            className="absolute inset-0 w-full h-full object-cover opacity-80"
-                          />
-
-                          {/* Dark Glassmorphism bottom overlay backing */}
-                          <div className={`absolute inset-0 bg-gradient-to-t ${activeItem.bgGradient} mix-blend-multiply`} />
-
-                          {/* Dynamic Header Badge for Logistics Velocity Zone */}
-                          <div className="absolute top-3 left-3 bg-black/65 backdrop-blur-md px-3 py-1 rounded-full border border-yellow-500/30 flex items-center space-x-1 z-30">
-                            <span className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />
-                            <span className="text-[10px] text-yellow-300 font-bold tracking-widest uppercase font-mono">
-                              Velocity Zone: {lang === 'en' ? activeItem.zoneEn : activeItem.zoneBn}
-                            </span>
-                          </div>
-
-                          {/* RIGHT-HAND FLOATING ACTION TRAY */}
-                          <div className="absolute right-3 bottom-24 flex flex-col items-center space-y-4 z-30">
+                        <motion.div
+                          key={item.id}
+                          id={`product-card-${item.id}`}
+                          initial={{ opacity: 0, y: 35, scale: 0.98 }}
+                          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                          viewport={{ once: true, margin: "-40px" }}
+                          whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                          transition={{ type: 'spring', stiffness: 120, damping: 14 }}
+                          className={`rounded-2xl border flex flex-col overflow-hidden transition-all duration-300 relative ${
+                            theme === 'dark' 
+                              ? 'bg-[#141414]/90 border-stone-800/80 shadow-[0_12px_24px_rgba(0,0,0,0.5)]' 
+                              : 'bg-white border-neutral-200/60 shadow-[0_8px_20px_rgba(26,83,25,0.06)]'
+                          }`}
+                        >
+                          {/* Top Media Banner Area with Tilt Zoom effect */}
+                          <div className="relative h-44 w-full bg-stone-900 overflow-hidden">
+                            <motion.img 
+                              src={item.imageUrl} 
+                              alt={item.titleEn}
+                              referrerPolicy="no-referrer"
+                              animate={{ scale: isPlaying ? 1.08 : 1 }}
+                              transition={{ duration: 0.4 }}
+                              className="w-full h-full object-cover opacity-85 hover:scale-105 transition-transform duration-500"
+                            />
                             
-                            {/* Like Node */}
-                            <motion.button
-                              id="btn-reel-like"
-                              whileTap={{ scale: 0.8 }}
-                              onClick={() => handleLikeReel(activeItem.id)}
-                              className={`w-12 h-12 rounded-full flex flex-col items-center justify-center backdrop-blur-md transition-all shadow-lg ${
-                                userLiked[activeItem.id]
-                                  ? 'bg-rose-500/95 text-white'
-                                  : 'bg-black/60 border border-white/10 text-white hover:bg-white/20'
-                              }`}
-                            >
-                              <Heart className={`w-5.5 h-5.5 ${userLiked[activeItem.id] ? 'fill-current' : ''}`} />
-                            </motion.button>
-                            <span className="text-[10px] font-bold text-white tracking-wider font-mono bg-black/40 px-1.5 py-0.5 rounded-full select-none">
-                              {convertNumber(likesCount[activeItem.id] || activeItem.likes, lang)}
-                            </span>
+                            {/* Animated Video Playing Layer if mock play state is active */}
+                            <AnimatePresence>
+                              {isPlaying && (
+                                <motion.div 
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  exit={{ opacity: 0 }}
+                                  className="absolute inset-0 bg-black/60 flex flex-col justify-between p-3 animate-none"
+                                >
+                                  {/* Camera scanning guidelines */}
+                                  <div className="absolute inset-2 border border-white/10 pointer-events-none rounded-lg">
+                                    <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-emerald-400" />
+                                    <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-emerald-400" />
+                                    <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-emerald-400" />
+                                    <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-emerald-400" />
+                                  </div>
 
-                            {/* Comments Button Node */}
-                            <button
-                              id="btn-reel-comments"
-                              onClick={() => setShowCommentsDrawer(true)}
-                              className="w-12 h-12 rounded-full bg-black/60 border border-white/10 flex flex-col items-center justify-center backdrop-blur-md text-white hover:bg-white/20 transition-all shadow-lg"
-                            >
-                              <MessageCircle className="w-5.5 h-5.5 text-emerald-400" />
-                            </button>
-                            <span className="text-[10px] font-bold text-white tracking-wider font-mono bg-black/40 px-1.5 py-0.5 rounded-full select-none">
-                              {convertNumber(activeItem.comments.length, lang)}
-                            </span>
+                                  <div className="flex items-center justify-between z-10">
+                                    <span className="bg-red-600/90 text-white font-mono font-bold text-[8px] uppercase px-1.5 py-0.5 rounded flex items-center space-x-1 animate-pulse">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                                      <span>LIVE YIELD VIEW</span>
+                                    </span>
+                                    <span className="text-[8px] text-zinc-300 font-mono tracking-widest bg-black/35 px-1.5 py-0.5 rounded">
+                                      {item.zoneEn.toUpperCase()} FRAME
+                                    </span>
+                                  </div>
 
-                            {/* DAE Info Shortcut */}
-                            <button
-                              id="btn-dae-quick"
-                              onClick={() => setSaaoSupportOpen(true)}
-                              className="w-12 h-12 rounded-full bg-gradient-to-tr from-emerald-600 to-green-700 hover:from-emerald-500 hover:to-green-600 flex items-center justify-center backdrop-blur-md text-white transition-all shadow-lg animate-bounce"
-                              title="Ask DAE Expert"
-                            >
-                              <span className="text-xs font-mono font-bold">DAE</span>
-                            </button>
-                          </div>
+                                  {/* Pulsate dynamic sound spectrum visualizer */}
+                                  <div className="flex items-end justify-center space-x-0.5 h-10 w-24 mx-auto mb-2 opacity-80">
+                                    {[8, 14, 22, 12, 18, 25, 10, 16, 20, 6].map((h, i) => (
+                                      <motion.div 
+                                        key={i}
+                                        className="w-1 bg-emerald-400 rounded-t"
+                                        animate={{ height: [h/2, h, h/3, h*1.2, h/2] }}
+                                        transition={{ duration: 1.2 + i*0.1, repeat: Infinity, ease: 'easeInOut' }}
+                                      />
+                                    ))}
+                                  </div>
 
-                          {/* LEFT-HAND METADATA METRICS TEXT OVERLAY */}
-                          <div className="absolute left-3 bottom-6 right-16 space-y-2 z-20 pointer-events-none">
-                            
-                            {/* Seller profile identification with verified badge shield */}
-                            <div className="flex items-center space-x-1.5 bg-black/40 backdrop-blur-sm p-1 rounded-lg w-max max-w-full">
-                              <div className="w-6 h-6 rounded-full bg-emerald-600 flex items-center justify-center font-bold text-white font-mono text-[10px]">
-                                {activeItem.sellerEn[0]}
-                              </div>
-                              <div className="truncate pr-1">
-                                <p className="text-[10px] font-bold text-white flex items-center">
-                                  <span>{lang === 'en' ? activeItem.sellerEn : activeItem.sellerBn}</span>
-                                  <Shield className="w-3 h-3 text-emerald-400 ml-1 flex-shrink-0" />
-                                </p>
-                                <p className="text-[8px] text-emerald-300 font-semibold">
-                                  {t.trustScore}: {convertNumber(activeItem.sellerRating, lang)}★ ({convertNumber(activeItem.sellerJobs, lang)} escrows)
-                                </p>
-                              </div>
+                                  <p className="text-[9px] font-mono font-semibold text-emerald-300 text-center z-10 tracking-wide">
+                                    {lang === 'en' ? '🔒 SECURED SENSOR LOGS CAPTURE ACTIVE' : '🔒 নিরাপদ বায়ো-সেন্সর লগিং সক্রিয় আছে'}
+                                  </p>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+
+                            {/* Velocity Logistics Zone Badge */}
+                            <div className="absolute top-2.5 left-2.5 flex items-center space-x-1 z-10">
+                              <span className={`text-[9px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full border backdrop-blur-md ${zoneBadgeColor}`}>
+                                {lang === 'en' ? `Zone: ${item.zoneEn}` : `জোন: ${item.zoneBn}`}
+                              </span>
                             </div>
 
-                            {/* Title & Location details */}
-                            <div className="space-y-0.5">
-                              <h2 className="text-base font-bold text-white leading-tight font-display drop-shadow">
-                                {lang === 'en' ? activeItem.titleEn : activeItem.titleBn}
-                              </h2>
-                              <p className="text-[11px] font-semibold text-neutral-300 flex items-center">
-                                <MapPin className="w-3 h-3 mr-1 text-emerald-400" />
-                                <span>{lang === 'en' ? activeItem.locationEn : activeItem.locationBn} ({lang === 'en' ? `📍 ${activeItem.distanceKm} km away` : `📍 ${convertNumber(activeItem.distanceKm, lang)} কি.মি. দূরে`})</span>
+                            {/* Play/Pause mock button for yield stream */}
+                            <button
+                              id={`btn-toggle-video-${item.id}`}
+                              type="button"
+                              onClick={() => {
+                                setPlayingVideos(prev => ({ ...prev, [item.id]: !prev[item.id] }));
+                                showToast(
+                                  playingVideos[item.id]
+                                    ? (lang === 'en' ? 'Live stream paused' : 'লাইভ ভিডিও প্রিভিউ বন্ধ করা হয়েছে')
+                                    : (lang === 'en' ? 'Simulating High-Definition Live Yield video stream...' : 'হাই-ডেফিনিশন লাইভ ভিডিও প্রিভিউ চালু হচ্ছে...')
+                                );
+                              }}
+                              className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/15 flex items-center justify-center text-white z-10 transition-transform active:scale-90 cursor-pointer"
+                              title="Toggle Video Stream"
+                            >
+                              {isPlaying ? <Square className="w-2.5 h-2.5 text-emerald-400 fill-current" /> : <Play className="w-2.5 h-2.5 text-white ml-0.5" />}
+                            </button>
+
+                            {/* Distance indicator overlay bottom-left */}
+                            <div className="absolute bottom-2 left-2 bg-black/55 backdrop-blur-sm px-2 py-0.5 rounded-lg border border-white/5 flex items-center space-x-0.5">
+                              <MapPin className="w-2.5 h-2.5 text-emerald-400" />
+                              <span className="text-[8.5px] text-zinc-200 font-bold font-mono">
+                                {lang === 'en' ? `${item.distanceKm} km away` : `${convertNumber(item.distanceKm, lang)} কিমি দূরে`}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Info panel */}
+                          <div className="p-3.5 flex-1 flex flex-col justify-between text-left space-y-3">
+                            <div className="space-y-1">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 font-mono">
+                                  {item.category}
+                                </span>
+                                
+                                {/* Upvote count action */}
+                                <button
+                                  id={`btn-upvote-${item.id}`}
+                                  type="button"
+                                  onClick={() => handleLikeReel(item.id)}
+                                  className="flex items-center space-x-1 hover:opacity-85 text-neutral-500 cursor-pointer"
+                                >
+                                  <Heart className={`w-3.5 h-3.5 ${hasLiked ? 'text-rose-500 fill-current' : 'text-neutral-405'}`} />
+                                  <span className="text-[10px] font-mono font-bold text-neutral-400 dark:text-neutral-500">
+                                    {convertNumber(likesCountVal, lang)}
+                                  </span>
+                                </button>
+                              </div>
+
+                              <h3 className="text-sm font-bold text-neutral-800 dark:text-stone-100 font-display tracking-tight leading-tight">
+                                {lang === 'en' ? item.titleEn : item.titleBn}
+                              </h3>
+
+                              <p className="text-[10px] text-neutral-500 dark:text-stone-400 tracking-wide line-clamp-2">
+                                {lang === 'en' ? item.zoneDescEn : item.zoneDescBn}
                               </p>
                             </div>
 
-                            {/* Logistics info block & Stock display */}
-                            <div className="flex flex-col space-y-1 bg-black/55 backdrop-blur-md p-2 rounded-xl border border-white/5 max-w-[280px]">
-                              <p className="text-[10px] font-bold text-yellow-300 leading-snug">
-                                {lang === 'en' ? activeItem.zoneDescEn : activeItem.zoneDescBn}
-                              </p>
+                            {/* Seller Card Section */}
+                            <div className="flex items-center justify-between p-2 rounded-xl bg-neutral-100/65 dark:bg-stone-900/40 border border-neutral-200/30 dark:border-white/5">
+                              <div className="flex items-center space-x-1.5 min-w-0">
+                                <div className="w-6 h-6 rounded-lg bg-emerald-750 dark:bg-[#4E9F3D] flex items-center justify-center font-bold text-white font-mono text-[10px] flex-shrink-0">
+                                  {item.sellerEn[0]}
+                                </div>
+                                <div className="truncate">
+                                  <p className="text-[9.5px] font-bold text-neutral-700 dark:text-stone-200 flex items-center">
+                                    <span className="truncate">{lang === 'en' ? item.sellerEn : item.sellerBn}</span>
+                                    <Shield className="w-3 h-3 text-emerald-500 dark:text-emerald-400 ml-1 flex-shrink-0" />
+                                  </p>
+                                  <p className="text-[8px] text-emerald-700 dark:text-emerald-400 font-bold font-mono">
+                                    {t.trustScore}: {convertNumber(item.sellerRating, lang)}★ ({convertNumber(item.sellerJobs, lang)} escrows)
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="text-right flex-shrink-0">
+                                <span className="text-[8.5px] bg-[#1A5319]/5 border border-[#1A5319]/15 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-300 px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">
+                                  {lang === 'en' ? 'SAAO Verified' : 'এসএএও প্রত্যয়িত'}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Logistics Stocks and Price Showcase */}
+                            <div className="grid grid-cols-2 gap-2 text-xs py-1.5 border-y border-neutral-200/50 dark:border-stone-850/85">
+                              <div className="text-left">
+                                <span className="text-[8.5px] text-neutral-400 block uppercase font-bold tracking-wider">{t.stockPrefix}</span>
+                                <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xs font-mono">
+                                  {lang === 'en' ? item.stockEn : item.stockBn}
+                                </span>
+                              </div>
+                              <div className="text-right border-l border-neutral-200/40 dark:border-stone-850 pl-2">
+                                <span className="text-[8.5px] text-neutral-400 block uppercase font-bold tracking-wider">{lang === 'en' ? 'Base price' : 'ভিত্তি মূল্য'}</span>
+                                <span className="font-extrabold text-[#1A5319] dark:text-[#52c41a] text-xs font-mono">
+                                  {lang === 'en' ? `${item.pricePerUnitEn} / ${item.unitEn}` : `${item.pricePerUnitBn} / ${item.unitBn}`}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Real-time Bid Status Summary on Card */}
+                            {activeBids.length > 0 && (
+                              <div className="p-2 rounded-lg bg-yellow-500/5 border border-yellow-500/20 text-left space-y-1">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[8.5px] font-bold text-yellow-600 dark:text-yellow-400 uppercase tracking-widest font-mono flex items-center">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mr-1 animate-ping" />
+                                    {lang === 'en' ? 'Active Offers' : 'সক্রিয় দরপ্রস্তাব'}
+                                  </span>
+                                  <span className="text-[8px] font-bold font-mono text-neutral-400">
+                                    {lang === 'en' ? `${activeBids.length} Bid(s)` : `${convertNumber(activeBids.length, lang)} প্রস্তাব`}
+                                  </span>
+                                </div>
+                                <div className="text-[9.5px] text-neutral-600 dark:text-neutral-400 font-mono truncate">
+                                  🏆 {lang === 'en' ? 'Highest bid' : 'সর্বোচ্চ দর'}: <span className="font-bold text-emerald-500">
+                                    {Math.max(...activeBids.map(b => b.bidPrice))} BDT
+                                  </span> {lang === 'en' ? `by ${activeBids[activeBids.length - 1].bidderName}` : `(${activeBids[activeBids.length - 1].bidderName})`}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Call to Dialogue comments trigger shortcut */}
+                            <button
+                              id={`btn-card-comments-${item.id}`}
+                              type="button"
+                              onClick={() => {
+                                setActiveCommentsListing(item);
+                                setShowCommentsDrawer(true);
+                              }}
+                              className="text-[10px] text-neutral-500 dark:text-stone-400 hover:text-emerald-600 flex items-center justify-start space-x-1 cursor-pointer py-0.5 text-left font-mono"
+                            >
+                              <span>💬</span>
+                              <span className="underline hover:text-emerald-500 font-semibold text-left">
+                                {lang === 'en' ? `Discussion Board (${item.comments.length} notes)` : `আলোচনা বোর্ড (${convertNumber(item.comments.length, lang)} মন্তব্য)`}
+                              </span>
+                            </button>
+
+                            {/* Dual action buttons + BID & OFFER BUTTON */}
+                            <div className="grid grid-cols-3 gap-1.5 pt-1">
                               
-                              <div className="flex items-center justify-between text-[11px] text-white pt-1 border-t border-white/10">
-                                <span className="font-semibold text-emerald-300">
-                                  {t.stockPrefix} {lang === 'en' ? activeItem.stockEn : activeItem.stockBn}
-                                </span>
-                                <span className="font-mono font-bold text-amber-300">
-                                  {lang === 'en' ? `${activeItem.pricePerUnitEn}/${activeItem.unitEn}` : `${activeItem.pricePerUnitBn}/${activeItem.unitBn}`}
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Dual action purchasing and transparent chatting buttons */}
-                            <div className="pointer-events-auto flex gap-2 w-full">
+                              {/* Bid & Negotiate Button */}
                               <button
-                                id="btn-instant-buy"
+                                id={`btn-card-bid-${item.id}`}
+                                type="button"
                                 onClick={() => {
-                                  setActiveCheckoutListing(activeItem);
+                                  setBiddingListing(item);
+                                  setBidPriceInput(item.pricePerUnitEn.replace(/[^0-9]/g, ''));
+                                  setBidQuantityInput('100');
+                                  setBidNotesInput('');
+                                  showToast(lang === 'en' ? `Loading secure ledger bidding for ${item.titleEn}...` : `দরপ্রস্তাব সিস্টেম লোড হচ্ছে...`);
+                                }}
+                                className="bg-amber-500 hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-500 text-stone-900 dark:text-white font-extrabold py-2 px-1 rounded-xl text-[10px] tracking-wide transition-all shadow-sm flex flex-col items-center justify-center cursor-pointer border border-amber-400/25 active:scale-95 scale-100"
+                              >
+                                <span className="text-[10px]">⚖️</span>
+                                <span className="font-display font-bold uppercase tracking-wider">{lang === 'en' ? 'Bid Now' : 'দাম বলুন'}</span>
+                              </button>
+
+                              {/* Instant Buy Button */}
+                              <button
+                                id={`btn-card-buy-${item.id}`}
+                                type="button"
+                                onClick={() => {
+                                  setActiveCheckoutListing(item);
                                   setCheckoutStep('select');
                                   setEscrowStatus('NONE');
                                 }}
-                                className="flex-1 bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white font-bold py-2.5 px-3 rounded-xl text-xs tracking-wide transition-all shadow-md flex items-center justify-center space-x-1.5"
+                                className="bg-[#1A5319] hover:bg-emerald-800 dark:bg-[#4E9F3D] dark:hover:bg-emerald-600 text-white font-extrabold py-2 px-1 rounded-xl text-[10px] tracking-wide transition-all shadow-sm flex flex-col items-center justify-center cursor-pointer active:scale-95 scale-100"
                               >
-                                <Coins className="w-4 h-4 text-emerald-200" />
-                                <span className="truncate">{t.instantBuy}</span>
+                                <span>⚡</span>
+                                <span className="font-display font-bold uppercase tracking-wider">{t.instantBuy}</span>
                               </button>
 
+                              {/* Chat & Deal Button */}
                               <button
-                                id="btn-negotiate-chat"
+                                id={`btn-card-chat-${item.id}`}
+                                type="button"
                                 onClick={() => {
-                                  setActiveChatListing(activeItem);
+                                  setActiveChatListing(item);
                                   setSelectedChatRole('buyer');
-                                  showToast(lang === 'en' ? `Opening transparent negotiation with ${activeItem.sellerEn}` : `${activeItem.sellerBn}-এর সাথে চ্যাট চালু হচ্ছে...`);
+                                  showToast(lang === 'en' ? `Opening transparent negotiation with ${item.sellerEn}` : `${item.sellerBn}-এর সাথে চ্যাট চালু হচ্ছে...`);
                                 }}
-                                className="flex-1 bg-stone-950/80 hover:bg-stone-900 border border-white/10 text-white font-bold py-2.5 px-3 rounded-xl text-xs tracking-wide transition-all shadow-md flex items-center justify-center space-x-1.5 whitespace-nowrap"
+                                className="bg-stone-900 hover:bg-stone-850 dark:bg-stone-800 dark:hover:bg-stone-750 border border-neutral-350/10 dark:border-white/10 text-white font-extrabold py-2 px-1 rounded-xl text-[10px] tracking-wide transition-all shadow-sm flex flex-col items-center justify-center cursor-pointer active:scale-95 scale-100"
                               >
-                                <MessageSquare className="w-4 h-4 text-emerald-450" />
-                                <span className="truncate">{lang === 'en' ? 'Chat & Deal' : 'চ্যাট ও ডিল'}</span>
+                                <span>💬</span>
+                                <span className="font-display font-bold uppercase tracking-wider">{lang === 'en' ? 'Chat' : 'চ্যাট'}</span>
                               </button>
+
                             </div>
 
                           </div>
-
-                          {/* Swipe Navigation buttons overlay */}
-                          <div className="absolute top-1/2 right-3 -translate-y-1/2 flex flex-col space-y-1.5 z-30">
-                            <button 
-                              id="btn-reel-prev"
-                              onClick={() => {
-                                setCurrentReelIndex(prev => prev > 0 ? prev - 1 : filteredListings.length - 1);
-                                showToast(lang === 'bn' ? 'আগের চালান' : 'Previous Agro-Consignment');
-                              }}
-                              className="w-10 h-10 rounded-full bg-black/60 border border-white/10 text-white flex items-center justify-center hover:bg-white/10 active:scale-95"
-                              title="Previous Reel"
-                            >
-                              ▲
-                            </button>
-                            <button 
-                              id="btn-reel-next"
-                              onClick={() => {
-                                setCurrentReelIndex(prev => (prev + 1) % filteredListings.length);
-                                showToast(lang === 'bn' ? 'পরবর্তী চালান' : 'Next Agro-Consignment');
-                              }}
-                              className="w-10 h-10 rounded-full bg-black/60 border border-white/10 text-white flex items-center justify-center hover:bg-white/10 active:scale-95 animate-pulse"
-                              title="Next Reel"
-                            >
-                              ▼
-                            </button>
-                          </div>
-
-                        </div>
+                        </motion.div>
                       );
-                    })()
+                    })
                   ) : (
-                    <div className="p-8 text-center text-stone-400 font-semibold flex flex-col items-center">
-                      <AlertCircle className="w-12 h-12 text-stone-500 mb-2" />
-                      <p>{lang === 'bn' ? 'এই ক্যাটাগরিতে কোনো পণ্য পাওয়া যায়নি' : 'No available yield list for this selected Category'}</p>
+                    <div className="p-8 text-center text-stone-400 font-semibold flex flex-col items-center justify-center h-44 bg-neutral-150/40 dark:bg-stone-900/20 rounded-2xl border border-dashed border-stone-800">
+                      <AlertCircle className="w-8 h-8 text-stone-500 mb-2 animate-bounce" />
+                      <p className="text-xs">{lang === 'bn' ? 'এই ক্যাটাগরিতে কোনো পণ্য পাওয়া যায়নি' : 'No available yield listing for this selected category'}</p>
                     </div>
                   )}
 
@@ -1867,12 +2184,17 @@ export default function App() {
 
                         {/* Scrolling list */}
                         <div className="flex-1 overflow-y-auto space-y-3 font-mono text-xs max-h-[180px] p-1">
-                          {filteredListings.length > 0 && filteredListings[currentReelIndex % filteredListings.length]?.comments.length === 0 ? (
-                            <p className="text-center text-neutral-400 py-4 italic">
-                              {lang === 'bn' ? 'আলোচনা শুরু করতে মন্তব্য করুন...' : 'No comments yet. Start the escrow negotiation!'}
-                            </p>
-                          ) : (
-                            filteredListings[currentReelIndex % filteredListings.length]?.comments.map(c => (
+                          {(() => {
+                            const targetItem = activeCommentsListing || filteredListings[0];
+                            if (!targetItem) return null;
+                            if (targetItem.comments.length === 0) {
+                              return (
+                                <p className="text-center text-neutral-400 py-4 italic">
+                                  {lang === 'bn' ? 'আলোচনা শুরু করতে মন্তব্য করুন...' : 'No comments yet. Start the escrow negotiation!'}
+                                </p>
+                              );
+                            }
+                            return targetItem.comments.map(c => (
                               <div key={c.id} className="p-2 rounded-lg bg-neutral-100 dark:bg-stone-900 border border-neutral-200/50 dark:border-stone-850">
                                 <div className="flex items-center justify-between mb-1">
                                   <span className="font-bold text-[#1A5319] dark:text-[#4E9F3D] text-[10px] truncate max-w-[150px]">
@@ -1886,8 +2208,8 @@ export default function App() {
                                   {lang === 'en' ? c.textEn : c.textBn}
                                 </p>
                               </div>
-                            ))
-                          )}
+                            ));
+                          })()}
                         </div>
 
                         {/* Interactive Post input footer */}
@@ -1908,6 +2230,216 @@ export default function App() {
                             <Send className="w-3.5 h-3.5" />
                           </button>
                         </form>
+                      </motion.div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* DYNAMIC SECURE BLOCKCHAIN LEDGER BIDDING DRAWER */}
+                <AnimatePresence>
+                  {biddingListing && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute inset-0 bg-black/60 backdrop-blur-sm z-50 flex flex-col justify-end"
+                    >
+                      {/* Clicking outside closes the drawer */}
+                      <div className="absolute inset-0 z-0" onClick={() => setBiddingListing(null)} />
+
+                      <motion.div
+                        initial={{ y: "100%" }}
+                        animate={{ y: 0 }}
+                        exit={{ y: "100%" }}
+                        transition={{ type: 'spring', damping: 20 }}
+                        className={`rounded-t-3xl p-4 flex flex-col space-y-4 z-10 max-h-[92%] relative overflow-y-auto ${
+                          theme === 'dark' ? 'bg-[#121212] border-t border-stone-800' : 'bg-white border-t border-emerald-100'
+                        }`}
+                      >
+                        {/* Drag Handle aesthetic indicator */}
+                        <div className="w-12 h-1 bg-neutral-300 dark:bg-stone-800 rounded-full mx-auto mb-1" />
+
+                        {/* Drawer Header details */}
+                        <div className="flex items-start justify-between">
+                          <div className="text-left">
+                            <h3 className="text-xs font-bold uppercase tracking-widest text-amber-500 font-mono">
+                              {lang === 'en' ? '🔐 AgroTrust Smart Bid Protocol' : '🔐 এগ্রোট্রাস্ট স্মার্ট দরপ্রস্তাব'}
+                            </h3>
+                            <h2 className="text-sm font-bold text-neutral-850 dark:text-stone-100 font-display">
+                              {lang === 'en' ? biddingListing.titleEn : biddingListing.titleBn}
+                            </h2>
+                          </div>
+                          <button
+                            id="btn-bidding-close"
+                            onClick={() => setBiddingListing(null)}
+                            className="p-1 rounded-full text-neutral-400 hover:bg-neutral-100 dark:hover:bg-stone-900 cursor-pointer"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+
+                        {/* Product Summary Mini Card */}
+                        <div className="flex items-center space-x-3 p-2 rounded-xl bg-neutral-100/50 dark:bg-stone-900/50 border border-neutral-200/35 dark:border-white/5 text-left">
+                          <img 
+                            src={biddingListing.imageUrl} 
+                            alt="" 
+                            className="w-12 h-12 rounded-lg object-cover"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest leading-none">
+                              {lang === 'en' ? 'Current listed price' : 'বর্তমান নির্ধারিত দর'}
+                            </p>
+                            <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 font-mono">
+                              {lang === 'en' ? `${biddingListing.pricePerUnitEn} / ${biddingListing.unitEn}` : `${biddingListing.pricePerUnitBn} / ${biddingListing.unitBn}`}
+                            </p>
+                            <p className="text-[9px] text-neutral-500 truncate leading-snug">
+                              👤 {lang === 'en' ? biddingListing.sellerEn : biddingListing.sellerBn} ({convertNumber(biddingListing.sellerRating, lang)}★)
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Ledger Hash Animation loader when bidding is pending */}
+                        {biddingLoading ? (
+                          <div className="p-8 text-center flex flex-col items-center justify-center space-y-3">
+                            <div className="relative w-12 h-12 flex items-center justify-center">
+                              <span className="absolute inset-0 rounded-full border-2 border-dashed border-amber-500 animate-spin" />
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-xs font-bold text-amber-500 font-mono tracking-wider animate-pulse uppercase">
+                                {lang === 'en' ? 'COMPILING LEDGER ESCROW terms...' : 'এসক্রো চুক্তি কোড সংকলন হচ্ছে...'}
+                              </p>
+                              <p className="text-[10px] text-neutral-400 max-w-[240px] leading-relaxed mx-auto">
+                                {lang === 'en' 
+                                  ? 'Signing with digital fingerprint keys and matching SAAO security limits...'
+                                  : 'ডিজিটাল কী দ্বারা দস্তখত এবং এসএএও ট্রাস্ট লিমিট মেলানো হচ্ছে...'}
+                              </p>
+                            </div>
+                          </div>
+                        ) : (
+                          <form id="form-ledger-bid" onSubmit={handlePlaceBid} className="space-y-4">
+                            
+                            {/* Preset bid increments section */}
+                            <div className="space-y-1">
+                              <span className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider text-left block">
+                                {lang === 'en' ? '⚡ Click Presets Multipliers' : '⚡ দ্রুত নির্ধারণের প্রেসেন্ট'}
+                              </span>
+                              <div className="grid grid-cols-3 gap-1.5 pt-0.5">
+                                {[
+                                  { labelEn: '-5% Discount', labelBn: '-৫% কমিশন', pct: 0.95 },
+                                  { labelEn: 'Listed Price', labelBn: 'নির্ধারিত মূল্য', pct: 1.0 },
+                                  { labelEn: '+5% Premium', labelBn: '+৫% অগ্রিম', pct: 1.05 }
+                                ].map((preset, i) => {
+                                  const originalBase = parseFloat(biddingListing.pricePerUnitEn.replace(/[^0-9]/g, '')) || 50;
+                                  const calculatedPrice = Math.round(originalBase * preset.pct);
+                                  
+                                  return (
+                                    <button
+                                      key={i}
+                                      type="button"
+                                      onClick={() => {
+                                        setBidPriceInput(String(calculatedPrice));
+                                        showToast(lang === 'en' ? `Preset calculated: ${calculatedPrice} BDT` : `মূল্য হিসাব করা হয়েছে: ${calculatedPrice} টাকা`);
+                                      }}
+                                      className={`px-2 py-2 rounded-xl text-left border transition-all flex flex-col justify-between cursor-pointer ${
+                                        parseInt(bidPriceInput) === calculatedPrice
+                                          ? 'border-amber-500 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold'
+                                          : 'border-neutral-200 dark:border-stone-850 hover:bg-neutral-100 dark:hover:bg-stone-900/60 text-[#212121]/80 dark:text-stone-300 bg-transparent'
+                                      }`}
+                                    >
+                                      <span className="text-[8px] uppercase tracking-wide block text-neutral-400">
+                                        {lang === 'en' ? preset.labelEn : preset.labelBn}
+                                      </span>
+                                      <span className="text-xs font-mono font-bold pt-0.5 leading-none">
+                                        {calculatedPrice} BDT
+                                      </span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+
+                            {/* Manual entry rows */}
+                            <div className="grid grid-cols-2 gap-3 pt-1">
+                              
+                              <div className="space-y-1 text-left">
+                                <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider font-mono">
+                                  {lang === 'en' ? 'Offer Price (BDT / Unit)' : 'প্রস্তাবিত দাম (টাকা / ইউনিট)'}
+                                </label>
+                                <div className="relative">
+                                  <input 
+                                    id="input-bid-price"
+                                    type="number"
+                                    required
+                                    value={bidPriceInput}
+                                    onChange={(e) => setBidPriceInput(e.target.value)}
+                                    placeholder="e.g. 50"
+                                    className="w-full pl-3 pr-10 py-2.5 rounded-xl border border-neutral-300 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 font-mono text-sm focus:ring-2 focus:ring-amber-500 outline-none"
+                                  />
+                                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] font-bold font-mono text-neutral-400">
+                                    BDT
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="space-y-1 text-left">
+                                <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider font-mono">
+                                  {lang === 'en' ? 'Bidding Quantity' : 'প্রস্তাবিত পরিমাণ'}
+                                </label>
+                                <div className="relative">
+                                  <input 
+                                    id="input-bid-qty"
+                                    type="number"
+                                    required
+                                    value={bidQuantityInput}
+                                    onChange={(e) => setBidQuantityInput(e.target.value)}
+                                    placeholder="e.g. 100"
+                                    className="w-full pl-3 pr-12 py-2.5 rounded-xl border border-neutral-300 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 font-mono text-sm focus:ring-2 focus:ring-amber-500 outline-none"
+                                  />
+                                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] font-bold font-mono text-neutral-400 uppercase truncate max-w-[40px]" title={biddingListing.unitEn}>
+                                    {biddingListing.unitEn.split(' ')[0]}
+                                  </span>
+                                </div>
+                              </div>
+
+                            </div>
+
+                            {/* Bidding conditions/terms remarks inputs */}
+                            <div className="space-y-1 text-left">
+                              <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider font-mono">
+                                {lang === 'en' ? 'Fulfillment Proposals / Remarks' : 'পরিবহন ও চুক্তি শর্তের মন্তব্য'}
+                              </label>
+                              <textarea 
+                                id="textarea-bid-notes"
+                                rows={2}
+                                value={bidNotesInput}
+                                onChange={(e) => setBidNotesInput(e.target.value)}
+                                placeholder={lang === 'en' ? 'e.g. Will collect tonight self-arranged / Refrigerated van storage...' : 'যেমন: আজ রাতে নিজ উদ্যোগে সংগ্রহ করব / প্লাস্টিক ক্রেটস প্যাকেজিং...'}
+                                className="w-full px-3 py-2 rounded-xl border border-neutral-300 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-xs focus:ring-2 focus:ring-amber-500 outline-none resize-none"
+                              />
+                            </div>
+
+                            {/* Trust information footer banner */}
+                            <div className="flex items-start space-x-2 p-2 rounded-xl bg-emerald-500/5 border border-emerald-500/10 text-left">
+                              <span className="text-emerald-500 pt-0.5">🛡️</span>
+                              <p className="text-[9.5px] text-emerald-800 dark:text-emerald-300 leading-snug">
+                                {lang === 'en' 
+                                  ? 'Secure escrow guarantee: Farmer must accept terms on blockchain ledger before any payment is authorized. Zero payment risk.'
+                                  : 'নিরাপদ এসক্রো গ্যারান্টি: বিক্রেতা কৃষক ডিজিটালভাবে প্রস্তাব গ্রহণ করার পরই পেমেন্ট অনুমোদিত হবে। পেমেন্ট হারানোর কোনো ঝুঁকি নেই।'}
+                              </p>
+                            </div>
+
+                            {/* Bid dispatch trigger button */}
+                            <button
+                              id="btn-ledger-bid-submit"
+                              type="submit"
+                              className="w-full py-3 bg-gradient-to-tr from-amber-500 to-yellow-600 dark:from-amber-600 dark:to-yellow-500 hover:from-amber-600 hover:to-yellow-700 text-stone-900 dark:text-white font-black rounded-xl text-xs uppercase tracking-widest transition-transform active:scale-95 shadow-md flex items-center justify-center space-x-2 cursor-pointer"
+                            >
+                              <span>⚖️</span>
+                              <span>{lang === 'en' ? 'Commit Official Bid Proposal' : 'অফিসিয়াল দরপ্রস্তাব দাখিল করুন'}</span>
+                            </button>
+
+                          </form>
+                        )}
                       </motion.div>
                     </motion.div>
                   )}
