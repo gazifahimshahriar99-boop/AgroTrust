@@ -1,0 +1,6 @@
+{
+  "name": "AgroTrust",
+  "description": "Smart Agriculture & Agro-Fintech Marketplace for Bangladesh",
+  "requestFramePermissions": ["geolocation", "camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
